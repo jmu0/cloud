@@ -1,17 +1,18 @@
 #!/usr/bin/python
+import hypervisor
 import socket
-import json
 
-class server:
-    info = []
-    def __init__(self):
-        self.info.name = socket.gethostname()
-        self.info.ip = socket.gethostbyname(self.name)
+def getServerProps():
+    props = {};
+    props['name'] = socket.gethostname()
+    props['ip'] = socket.gethostbyname(props['name'])
+    if hypervisor.isHypervisor():
+        props['is_hypervisor'] = True
+        props['virsh_version'] = hypervisor.getVirshVersion()
+        props['guests'] = hypervisor.getGuestList()
+    else:
+        props['is_hypervisor'] = False
+    return props
+
     
-    def getVars(self):
-        return json.dumps(self.info)
-
-
-s = server()
-print s.getVars()
-    
+print getServerProps()
