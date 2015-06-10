@@ -3,4 +3,4 @@ import hypervisor
 
 print(hypervisor.isHypervisor())
 
-print hypervisor.getList()
+print hypervisor.getGuestList()
