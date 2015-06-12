@@ -27,7 +27,6 @@ def run():
         cmd = data.split()
         if (cmd): 
             result = doCommand(cmd)
-            print(result)
             conn.sendall(str(result).encode())
         conn.close()
 
@@ -36,7 +35,11 @@ def doCommand(cmd):
         if cmd[0] == 'sys':
             print('get system props')
             props = server.getServerProps()
-            return pickle.dump(props)
+            print(props)
+            props = pickle.dumps(props)
+            print(props)
+            return props
+
     except:
         pass
 

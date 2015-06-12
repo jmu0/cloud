@@ -43,7 +43,7 @@ def scanCloud():
         data = data.decode()
         try:
             print(data)
-            data = pickle.load(data)
+            data = pickle.loads(data)
             print(data)
             cloud.push(data)
         except:
