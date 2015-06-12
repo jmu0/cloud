@@ -6,6 +6,9 @@ import pickle
 
 
 def run():
+    cloud = []
+    cloud.append(server.getServerProps())
+
     host = server.getHostName() 
     port = scanner.getCloudPort()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

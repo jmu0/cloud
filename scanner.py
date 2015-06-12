@@ -17,14 +17,16 @@ def portscan(ip, port):
         return False
 
 def scanNetwork(port):
-    gevonden = []
+    found = []
+    localip = socket.gethostbyname(name)
     for x in range(0,256):
         ip = "10.0.0." + str(x)
-        # print "scanning: " + ip
-        if portscan(ip, port):
-            # print 'Port ' + str(port) + 'is open op ip:' + ip
-            gevonden.append(ip)
-    return gevonden
+        if ip != localip:
+            if portscan(ip, port):
+                found.append(ip)
+        else:
+            print('not scanning local ip' + str(localip))
+    return found 
 
 def scanCloud():
     ips = scanNetwork(getCloudPort())
