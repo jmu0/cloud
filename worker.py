@@ -33,13 +33,9 @@ def run():
 def doCommand(cmd):
     try:
         if cmd[0] == 'sys':
-            print('get system props')
             props = server.getServerProps()
-            print(props)
             props = pickle.dumps(props)
-            print(props)
             return props
-
     except:
         pass
 

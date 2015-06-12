@@ -42,13 +42,11 @@ def scanCloud():
             if not buf or buf.find('\n'): break
         data = data.decode()
         try:
-            print(data)
             data = pickle.loads(data)
-            print(data)
-            cloud.push(data)
         except:
             print('cannot decode pickle::' + str(data))
             pass
+        cloud.append(data)
     return cloud
 
 
