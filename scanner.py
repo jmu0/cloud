@@ -39,8 +39,11 @@ def scanCloud():
             data += buf
             if not buf or buf.find('\n'): break
         data = data.decode()
-        data = json.loads(data)
-        cloud.push(data)
+        try:
+            data = json.loads(data)
+            cloud.push(data)
+        except:
+            pass
     return cloud
 
 

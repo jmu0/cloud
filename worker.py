@@ -26,13 +26,15 @@ def run():
         data = data.decode()
         cmd = data.split()
         if (cmd): 
-            conn.sendall(str(doCommand(cmd)).encode())
+            result = doCommand(cmd)
+            print(result)
+            conn.sendall(str(result).encode())
         conn.close()
 
 def doCommand(cmd):
-    print(cmd)
     try:
         if cmd[0] == 'sys':
+            print('get system props')
             return json.puts(server.getServerProps())
     except:
         pass
