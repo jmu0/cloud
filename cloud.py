@@ -1,18 +1,21 @@
 #!/usr/bin/python
-import hypervisor
-import socket
+import server
+import sys
+import scan
 
-def getServerProps():
-    props = {};
-    props['name'] = socket.gethostname()
-    props['ip'] = socket.gethostbyname(props['name'])
-    if hypervisor.isHypervisor():
-        props['is_hypervisor'] = True
-        props['virsh_version'] = hypervisor.getVirshVersion()
-        props['guests'] = hypervisor.getGuestList()
-    else:
-        props['is_hypervisor'] = False
-    return props
+if len(sys.argv) == 1:
+    #print help string
+    #TODO: write help.txt file
+    print('helpstring')
+elif sys.argv[1] == 'sys':
+    #print system properties and exit
+    print server.getServerProps()
+elif sys.argv[1] == 'run':
+    #TODO: run daemon
+    pass
+elif sys.argv[1] == 'ping':
+    #TODO: find other servers (portscan), print and exit
+    print(scan.scanNetwork(22))
 
-    
-print getServerProps()
+
+

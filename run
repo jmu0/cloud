@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python cloud.py een twee drie
