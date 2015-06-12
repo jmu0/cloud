@@ -1,6 +1,6 @@
 import socket
 import time
-import json
+import pickle 
 
 def getCloudPort(): 
     return 7777
@@ -42,11 +42,12 @@ def scanCloud():
             if not buf or buf.find('\n'): break
         data = data.decode()
         try:
-            print('return data:')
             print(data)
-            data = json.loads(data)
+            data = pickle.load(data)
+            print(data)
             cloud.push(data)
         except:
+            print('cannot decode pickle::' + str(data))
             pass
     return cloud
 

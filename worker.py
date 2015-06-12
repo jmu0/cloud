@@ -2,7 +2,7 @@ import server
 import scanner
 import socket
 import sys
-import json
+import pickle
 
 
 def run():
@@ -36,8 +36,7 @@ def doCommand(cmd):
         if cmd[0] == 'sys':
             print('get system props')
             props = server.getServerProps()
-            print(props)
-            return json.puts(props)
+            return pickle.dump(props)
     except:
         pass
 
