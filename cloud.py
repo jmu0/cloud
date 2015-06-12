@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import server
 import scanner
 import worker
@@ -8,7 +8,7 @@ if len(sys.argv) == 1:
     #TODO: write help.txt file
     print('helpstring')
 elif sys.argv[1] == 'sys':
-    print server.getServerProps()
+    print(server.getServerProps())
 elif sys.argv[1] == 'run':
     worker.run()
 elif sys.argv[1] == 'scan':
