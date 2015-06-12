@@ -35,7 +35,9 @@ def doCommand(cmd):
     try:
         if cmd[0] == 'sys':
             print('get system props')
-            return json.puts(server.getServerProps())
+            props = server.getServerProps()
+            print(props)
+            return json.puts(props)
     except:
         pass
 

@@ -29,7 +29,9 @@ def scanNetwork(port):
 def scanCloud():
     ips = scanNetwork(getCloudPort())
     cloud = []
+    print(ips)
     for ip in ips:
+        print('scanning ' + ip)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, getCloudPort()))
         s.send(str.encode('sys'))
@@ -40,6 +42,8 @@ def scanCloud():
             if not buf or buf.find('\n'): break
         data = data.decode()
         try:
+            print('return data:')
+            print(data)
             data = json.loads(data)
             cloud.push(data)
         except:

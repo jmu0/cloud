@@ -21,6 +21,5 @@ def getServerProps():
         props['guests'] = hypervisor.getGuestList()
     else:
         props['is_hypervisor'] = False
-    print(props)
     return props
 
