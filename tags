@@ -1,0 +1,30 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+buf	test/test.socket.client.py	/^    buf =  s.recv(1024)$/;"	v
+data	test/test.socket.client.py	/^data = ""$/;"	v
+data	test/test.socket.client.py	/^data = data.decode()$/;"	v
+doCommand	test/test.socket.server.py	/^def doCommand(cmd):$/;"	f
+doCommand	worker.py	/^def doCommand(cmd):$/;"	f
+end	test/test.portscanner.py	/^end = time.time()$/;"	v
+findSSHservers	test/test.portscanner.py	/^def findSSHservers():$/;"	f
+getCloudPort	scanner.py	/^def getCloudPort(): $/;"	f
+getGuestList	hypervisor.py	/^def getGuestList():$/;"	f
+getHostName	server.py	/^def getHostName():$/;"	f
+getServerIP	server.py	/^def getServerIP(name):$/;"	f
+getServerProps	server.py	/^def getServerProps():$/;"	f
+getVirshVersion	hypervisor.py	/^def getVirshVersion():$/;"	f
+host	test/test.socket.server.py	/^host = '10.0.0.5'$/;"	v
+isHypervisor	hypervisor.py	/^def isHypervisor():$/;"	f
+port	test/test.socket.server.py	/^port = 7777 $/;"	v
+portscan	scanner.py	/^def portscan(ip, port):$/;"	f
+portscan	test/test.portscanner.py	/^def portscan(ip, port):$/;"	f
+run	worker.py	/^def run():$/;"	f
+s	test/test.socket.client.py	/^s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)$/;"	v
+s	test/test.socket.server.py	/^s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)$/;"	v
+scanCloud	scanner.py	/^def scanCloud():$/;"	f
+scanNetwork	scanner.py	/^def scanNetwork(port):$/;"	f
+start	test/test.portscanner.py	/^start = time.time()$/;"	v

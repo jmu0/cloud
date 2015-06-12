@@ -18,14 +18,14 @@ def portscan(ip, port):
 
 def scanNetwork(port):
     found = []
-    localip = socket.gethostbyname(name)
+    localip = socket.gethostbyname(socket.gethostname())
     for x in range(0,256):
         ip = "10.0.0." + str(x)
         if ip != localip:
             if portscan(ip, port):
                 found.append(ip)
         else:
-            print('not scanning local ip' + str(localip))
+            print('Not scanning local ip: ' + str(localip))
     return found 
 
 def scanCloud():
@@ -46,12 +46,7 @@ def scanCloud():
         try:
             data = pickle.loads(data)
         except:
-            print('cannot decode pickle::' + str(data))
+            print('Cannot decode pickle: ' + str(data))
             pass
         cloud.append(data)
     return cloud
-
-
-
-        
-

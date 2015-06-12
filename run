@@ -1,3 +1,2 @@
 #!/bin/bash
-
-python cloud.py een twee drie
+python cloud.py run

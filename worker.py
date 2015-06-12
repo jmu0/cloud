@@ -6,8 +6,12 @@ import pickle
 
 
 def run():
+
     cloud = []
     cloud.append(server.getServerProps())
+    print(cloud)
+    cloud += scanner.scanCloud()
+    print(cloud)
 
     host = server.getHostName() 
     port = scanner.getCloudPort()
@@ -18,6 +22,7 @@ def run():
     except socket.error as e:
         print(str(e))
     s.listen(256)
+    print('Listening on  port ' + str(port))
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))

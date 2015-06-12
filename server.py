@@ -22,4 +22,3 @@ def getServerProps():
     else:
         props['is_hypervisor'] = False
     return props
-
