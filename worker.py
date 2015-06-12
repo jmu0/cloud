@@ -2,6 +2,7 @@ import server
 import scanner
 import socket
 import sys
+import json
 
 
 def run():
@@ -24,11 +25,15 @@ def run():
             if not buf or buf.find('\n'): break
         data = data.decode()
         cmd = data.split()
-        conn.sendall(str(doCommand(cmd)).encode())
+        if (cmd): 
+            conn.sendall(str(doCommand(cmd)).encode())
         conn.close()
 
 def doCommand(cmd):
     print(cmd)
-    if cmd[0] == 'data':
-        return "hier is de data\n"
+    try:
+        if cmd[0] == 'sys':
+            return json.puts(server.getServerProps())
+    except:
+        pass
 
