@@ -5,7 +5,7 @@ import hypervisor
 import scanner
 
 def getServerIP(name):
-    return socket.gethostbyname(props['name'])
+    return socket.gethostbyname(name)
 
 def getHostName():
     return socket.gethostname()
