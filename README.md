@@ -1,2 +1,2 @@
 # cloud
-Manage hypervisors and data servers.
+Manage hypervisors and storage servers.

@@ -11,6 +11,7 @@ def getHostName():
 
 
 def getServerProps():
+    '''get properties of localhost'''
     props = {}
     props['name'] = getHostName()
     props['ip'] = getServerIP(props['name'])
