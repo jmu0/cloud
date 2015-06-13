@@ -1,17 +1,17 @@
 import socket
-import sys
-import json
 import hypervisor
-import scanner
+
 
 def getServerIP(name):
     return socket.gethostbyname(name)
 
+
 def getHostName():
     return socket.gethostname()
 
+
 def getServerProps():
-    props = {};
+    props = {}
     props['name'] = getHostName()
     props['ip'] = getServerIP(props['name'])
     props['mac'] = 'mac address'

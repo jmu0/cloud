@@ -35,7 +35,6 @@ def scanCloud():
     ips = scanNetwork(getCloudPort())
     cloud = []
     print(ips)
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     for ip in ips:
         print('scanning ' + ip)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
