@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#/usr/bin/python3
 import server
 import scanner
 import worker
