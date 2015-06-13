@@ -1,7 +1,7 @@
 import server
 import scanner
 import socket
-import pickle
+import json
 
 
 def run():
@@ -25,13 +25,13 @@ def run():
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
-        data = ""
+        data = b''
         while True:
             buf = conn.recv(1024)
-            buf = buf.decode()
-            data += str(buf)
-            if not buf or buf.find('\n'):
+            data += buf
+            if not buf or str(buf).find('\n'):
                 break
+        data = data.decode()
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
@@ -43,7 +43,7 @@ def doCommand(cmd):
     try:
         if cmd[0] == 'sys':
             props = server.getServerProps()
-            props = pickle.dumps(props)
+            props = json.dumps(props)
             return props
     except:
         pass

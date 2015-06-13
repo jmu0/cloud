@@ -1,5 +1,5 @@
 import socket
-import pickle
+import json
 
 
 def getCloudPort():
@@ -40,17 +40,17 @@ def scanCloud():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, getCloudPort()))
         s.send(str.encode('sys'))
-        data = ""
+        data = b''
         while True:
             buf = s.recv(1024)
-            buf = buf.decode()
-            data += str(buf)
-            if not buf or buf.find('\n'):
+            data += buf
+            if not buf or str(buf).find('\n'):
                 break
         try:
-            data = pickle.loads(data)
+            data = data.decode()
+            data = json.loads(data)
         except:
-            print('Cannot decode pickle: ' + str(data))
+            print('Cannot decode json: ' + str(data))
             pass
         cloud.append(data)
     return cloud

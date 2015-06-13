@@ -2,7 +2,9 @@ import os
 
 
 def isHypervisor():
-    version = os.popen('virsh --version').read()[0:-1]
+    f = os.popen('virsh --version')
+    version = f.read()[0:-1]
+    f.close()
     if len(version) > 0:
         return True
     else:
@@ -10,11 +12,16 @@ def isHypervisor():
 
 
 def getVirshVersion():
-    return os.popen('virsh --version').read()[0:-1]
+    f = os.popen('virsh --version')
+    version = f.read()[0:-1]
+    f.close()
+    return version
 
 
 def getGuestList():
-    txt = os.popen('virsh list').read()[0:-1]
+    f = os.popen('virsh list')
+    txt = f.read()[0:-1]
+    f.close()
     txt = txt.split('\n')[2:]
     list = []
     for l in txt:
