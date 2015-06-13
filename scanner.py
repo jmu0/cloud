@@ -46,7 +46,7 @@ def scanCloud():
             data += buf
             if not buf or buf.find('\n'):
                 break
-        data = data.decode()
+        data = str(data).decode()
         try:
             data = pickle.loads(data)
         except:
