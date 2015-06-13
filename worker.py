@@ -28,7 +28,7 @@ def run():
         data = ""
         while True:
             buf = conn.recv(1024)
-            data += buf
+            data += str(buf)
             if not buf or buf.find('\n'):
                 break
         data = data.decode()
