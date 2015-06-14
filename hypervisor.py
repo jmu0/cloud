@@ -36,5 +36,4 @@ def getGuestList():
         if len(l) is 3:
             item = {"id": l[0], "name": l[1], "state": l[2]}
             list.append(item)
-
     return list

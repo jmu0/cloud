@@ -1,5 +1,6 @@
 import socket
 import hypervisor
+import nfs
 
 
 def getServerIP(name):
@@ -24,4 +25,10 @@ def getServerProps():
         props['is_hypervisor'] = 'False'
         props['virsh_version'] = 'not installed'
         props['guests'] = []
+    if nfs.isNfsServer():
+        props['is_nfs_server'] = 'True'
+        props['shares'] = nfs.getShares()
+    else:
+        props['is_nfs_server'] = 'False'
+        props['shares'] = []
     return props
