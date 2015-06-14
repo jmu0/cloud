@@ -2,7 +2,7 @@ import os
 
 
 def isHypervisor():
-    f = os.popen('virsh --version')
+    f = os.popen('which virsh')
     version = f.read()[0:-1]
     f.close()
     if len(version) > 0:
