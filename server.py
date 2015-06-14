@@ -22,4 +22,6 @@ def getServerProps():
         props['guests'] = hypervisor.getGuestList()
     else:
         props['is_hypervisor'] = False
+        props['virsh_version'] = 'not installed'
+        props['guests'] = []
     return props
