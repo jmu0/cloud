@@ -15,7 +15,10 @@ def getVirshVersion():
     f = os.popen('virsh --version')
     version = f.read()[0:-1]
     f.close()
-    return version
+    if len(version) > 0:
+        return version
+    else:
+        return 'not installed'
 
 
 def getGuestList():
