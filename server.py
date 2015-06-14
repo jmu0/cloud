@@ -17,11 +17,11 @@ def getServerProps():
     props['ip'] = getServerIP(props['name'])
     props['mac'] = 'mac address'
     if hypervisor.isHypervisor():
-        props['is_hypervisor'] = True
+        props['is_hypervisor'] = 'True'
         props['virsh_version'] = hypervisor.getVirshVersion()
         props['guests'] = hypervisor.getGuestList()
     else:
-        props['is_hypervisor'] = False
+        props['is_hypervisor'] = 'False'
         props['virsh_version'] = 'not installed'
         props['guests'] = []
     return props

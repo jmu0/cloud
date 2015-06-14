@@ -76,23 +76,27 @@ def getFirstServer():
 def getFromSocket(command):
     '''get data from running cloud instance'''
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((getFirstServer(), getCloudPort()))
-    cmd = command
-    cmd = cmd.encode()
-    s.send(cmd)
-    data = b''
-    while True:
-        buf = s.recv(1024)
-        data += buf
-        # if not buf or str(buf).find('\n'):
-        if not buf:
-            break
-    try:
-        data = data.decode()
-        data = json.loads(data)
-        return data
-    except:
-        print('Cannot decode json: ' + str(data))
+    ip = getFirstServer()
+    if (ip):
+        s.connect((ip, getCloudPort()))
+        cmd = command
+        cmd = cmd.encode()
+        s.send(cmd)
+        data = b''
+        while True:
+            buf = s.recv(1024)
+            data += buf
+            # if not buf or str(buf).find('\n'):
+            if not buf:
+                break
+        try:
+            data = data.decode()
+            data = json.loads(data)
+            return data
+        except:
+            print('Cannot decode json: ' + str(data))
+            return False
+    else:
         return False
 
 
