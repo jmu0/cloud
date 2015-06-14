@@ -59,7 +59,7 @@ def doCommand(cmd):
 def cloudHasServer(srv):
     global cloud
     for s in cloud:
-        if s['ip'] == srv['ip']:
+        if not type(s) == 'string' and s['ip'] == srv['ip']:
             return True
     return False
 
