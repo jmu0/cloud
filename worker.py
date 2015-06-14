@@ -67,5 +67,8 @@ def cloudHasServer(srv):
 def cloudAddServer(srv):
     global cloud
     if not cloudHasServer(srv):
+        print('adding server:')
+        print(srv)
         cloud.append(srv)
+        print('cloud:')
         print(cloud)
