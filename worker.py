@@ -7,7 +7,7 @@ cloud = []
 
 
 def run():
-    '''listen on port'''
+    '''run server, listen on port'''
     global cloud
     cloud.append(server.getServerProps())
     # print(cloud)
@@ -43,10 +43,9 @@ def run():
 
 def doCommand(cmd):
     '''do command from port'''
-    if cmd[0] == 'sys':
-        props = server.getServerProps()
-        props = json.dumps(props)
-        return props
+    if cmd[0] == 'servers':
+        servers = json.dumps(cloud)
+        return servers
     if cmd[0] == 'handshake':
         data = ''.join(cmd[1:])
         s = json.loads(data)
@@ -54,21 +53,40 @@ def doCommand(cmd):
         props = server.getServerProps()
         props = json.dumps(props)
         return props
+    if cmd[0] == 'guests':
+        guests = getGuestList()
+        guests = json.dumps(guests)
+        return guests
 
 
 def cloudHasServer(srv):
+    '''return boolean if server exists in the cloud'''
     global cloud
     for s in cloud:
-        if not type(s) == 'string' and s['ip'] == srv['ip']:
-            return True
+        try:
+            if s['ip'] == srv['ip']:
+                return True
+        except:
+            print(s)
+            print(srv)
     return False
 
 
 def cloudAddServer(srv):
+    '''add a server to the cloud'''
     global cloud
-    if not cloudHasServer(srv):
-        print('adding server:')
-        print(srv)
+    if not cloudHasServer(srv): # add server to cloud
         cloud.append(srv)
-        print('cloud:')
-        print(cloud)
+    else: # replace existing server
+        for i in range(len(cloud)):
+            if cloud[i]['ip'] == srv['ip']:
+                cloud[i] = srv
+
+
+def getGuestList():
+    '''return list of all vm's in the cloud'''
+    global cloud
+    vmlist = []
+    for s in cloud:
+        vmlist = vmlist + s['guests']
+    return vmlist
