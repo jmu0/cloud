@@ -45,7 +45,8 @@ def scanCloud():
         while True:
             buf = s.recv(1024)
             data += buf
-            if not buf or str(buf).find('\n'):
+            # if not buf or str(buf).find('\n'):
+            if not buf:
                 break
         try:
             data = data.decode()
