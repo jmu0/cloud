@@ -15,6 +15,7 @@ def getVirshVersion():
     f = os.popen('virsh --version')
     version = f.read()[0:-1]
     f.close()
+    print('version: ' + str(version))
     if len(version) > 0:
         return version
     else:
