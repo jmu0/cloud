@@ -1,4 +1,5 @@
 import os
+import socket
 
 
 def isNfsServer():
@@ -19,6 +20,7 @@ def getShares():
 
 def lineToShare(line):
     if not line.strip()[0] == '#':
+        servername = socket.gethostname()
         line = line.split()
         path = line[0]
         name = path.split('/')[-1:][0]
@@ -31,7 +33,8 @@ def lineToShare(line):
             'name': name,
             'path': path,
             'network': network,
-            'options': options
+            'options': options,
+            'server': servername
         }
         return share
     else:

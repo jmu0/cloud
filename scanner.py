@@ -103,5 +103,10 @@ def getFromSocket(command):
 def getServers():
     return getFromSocket('servers')
 
+
 def getGuests():
     return getFromSocket('guests')
+
+
+def getShares():
+    return getFromSocket('shares')

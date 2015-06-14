@@ -57,6 +57,10 @@ def doCommand(cmd):
         guests = getGuestList()
         guests = json.dumps(guests)
         return guests
+    if cmd[0] == 'shares':
+        shares = getShareList()
+        shares = json.dumps(shares)
+        return shares
 
 
 def cloudHasServer(srv):
@@ -75,9 +79,9 @@ def cloudHasServer(srv):
 def cloudAddServer(srv):
     '''add a server to the cloud'''
     global cloud
-    if not cloudHasServer(srv): # add server to cloud
+    if not cloudHasServer(srv):  # add server to cloud
         cloud.append(srv)
-    else: # replace existing server
+    else:  # replace existing server
         for i in range(len(cloud)):
             if cloud[i]['ip'] == srv['ip']:
                 cloud[i] = srv
@@ -90,3 +94,12 @@ def getGuestList():
     for s in cloud:
         vmlist = vmlist + s['guests']
     return vmlist
+
+
+def getShareList():
+    '''return list of all nfs shares in the cloud'''
+    global cloud
+    shares = []
+    for s in cloud:
+        shares = shares + s['shares']
+    return shares

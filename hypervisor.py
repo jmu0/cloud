@@ -1,4 +1,5 @@
 import os
+import socket
 
 
 def isHypervisor():
@@ -16,7 +17,6 @@ def getVirshVersion():
         f = os.popen('virsh --version')
         version = f.read()[0:-1]
         f.close()
-        print('version: ' + str(version))
         if len(version) > 0:
             return version
         else:
@@ -26,6 +26,7 @@ def getVirshVersion():
 
 
 def getGuestList():
+    servername = socket.gethostname()
     f = os.popen('virsh list')
     txt = f.read()[0:-1]
     f.close()
@@ -34,6 +35,11 @@ def getGuestList():
     for l in txt:
         l = l.split()
         if len(l) is 3:
-            item = {"id": l[0], "name": l[1], "state": l[2]}
+            item = {
+                "id": l[0],
+                "name": l[1],
+                "state": l[2],
+                "host": servername
+            }
             list.append(item)
     return list

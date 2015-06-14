@@ -51,7 +51,7 @@ def printListOfDictionaries(keys, lst):
                 field += ' '
             line += field
         print(line)
-    print()  # print empty line
+        print()  # print empty line
 
 
 def printServerList(lst):
@@ -61,7 +61,8 @@ def printServerList(lst):
             'ip': 1,
             'mac': 1,
             'is_hypervisor': 13,
-            'virsh_version': 13
+            'virsh_version': 13,
+            'is_nfs_server': 13
         }
         printListOfDictionaries(keys, lst)
     else:
@@ -72,7 +73,21 @@ def printGuestList(lst):
     if (lst):
         keys = {
             'name': 1,
-            'state': 1
+            'state': 1,
+            'host': 1
+        }
+        printListOfDictionaries(keys, lst)
+    else:
+        print('no list')
+
+
+def printShareList(lst):
+    if (lst):
+        keys = {
+            'name': 1,
+            'path': 1,
+            'network': 1,
+            'server': 1
         }
         printListOfDictionaries(keys, lst)
     else:
