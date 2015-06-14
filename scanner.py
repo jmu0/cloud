@@ -1,5 +1,6 @@
 import socket
 import json
+import server
 
 
 def getCloudPort():
@@ -26,20 +27,22 @@ def scanNetwork(port):
         if ip != localip:
             if portscan(ip, port):
                 found.append(ip)
-        else:
-            print('Not scanning local ip: ' + str(localip))
+        # else:
+            #print('Not scanning local ip: ' + str(localip))
     return found
 
 
 def scanCloud():
     ips = scanNetwork(getCloudPort())
     cloud = []
-    print(ips)
+    # print(ips)
     for ip in ips:
         print('scanning ' + ip)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, getCloudPort()))
-        s.send(str.encode('sys'))
+        cmd = 'handshake ' + json.dumps(server.getServerProps())
+        cmd.encode()
+        s.send(cmd)
         data = b''
         while True:
             buf = s.recv(1024)

@@ -3,14 +3,16 @@ import scanner
 import socket
 import json
 
+cloud = []
+
 
 def run():
     '''listen on port'''
-    cloud = []
+    global cloud
     cloud.append(server.getServerProps())
-    print(cloud)
+    # print(cloud)
     cloud += scanner.scanCloud()
-    print(cloud)
+    # print(cloud)
 
     host = server.getHostName()
     port = scanner.getCloudPort()
@@ -40,10 +42,30 @@ def run():
 
 
 def doCommand(cmd):
-    try:
-        if cmd[0] == 'sys':
-            props = server.getServerProps()
-            props = json.dumps(props)
-            return props
-    except:
-        pass
+    '''do command from port'''
+    if cmd[0] == 'sys':
+        props = server.getServerProps()
+        props = json.dumps(props)
+        return props
+    if cmd[0] == 'handshake':
+        data = ''.join(cmd[1:])
+        s = json.loads(data)
+        cloudAddServer(s)
+        props = server.getServerProps()
+        props = json.dumps(props)
+        return props
+
+
+def cloudHasServer(srv):
+    global cloud
+    for s in cloud:
+        if s['ip'] == srv['ip']:
+            return True
+    return False
+
+
+def cloudAddServer(srv):
+    global cloud
+    if not cloudHasServer(srv):
+        cloud.append(srv)
+        print(cloud)
