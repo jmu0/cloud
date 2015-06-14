@@ -61,6 +61,10 @@ def doCommand(cmd):
         shares = getShareList()
         shares = json.dumps(shares)
         return shares
+    if cmd[0] == 'mounts':
+        mounts = getMountList()
+        mounts = json.dumps(mounts)
+        return mounts
 
 
 def cloudHasServer(srv):
@@ -103,3 +107,12 @@ def getShareList():
     for s in cloud:
         shares = shares + s['shares']
     return shares
+
+
+def getMountList():
+    '''return list of all nfs shares in the cloud'''
+    global cloud
+    mounts = []
+    for s in cloud:
+        mounts = mounts + s['mounts']
+    return mounts

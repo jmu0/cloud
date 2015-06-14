@@ -51,7 +51,7 @@ def printListOfDictionaries(keys, lst):
                 field += ' '
             line += field
         print(line)
-        print()  # print empty line
+    print()  # print empty line
 
 
 def printServerList(lst):
@@ -88,6 +88,25 @@ def printShareList(lst):
             'path': 1,
             'network': 1,
             'server': 1
+        }
+        printListOfDictionaries(keys, lst)
+    else:
+        print('no list')
+
+
+def printMountList(lst):
+    if (lst):
+        keys = {
+            'mount': 5,
+            'shareserver': 11,
+            'sharepath': 9,
+            'sharename': 9,
+            'server': 6,
+            'size': 4,
+            'used': 4,
+            'available': 9,
+            'usedPerc': 8,
+            'mountpoint': 10
         }
         printListOfDictionaries(keys, lst)
     else:

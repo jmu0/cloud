@@ -31,4 +31,5 @@ def getServerProps():
     else:
         props['is_nfs_server'] = 'False'
         props['shares'] = []
+    props['mounts'] = nfs.getMounts()
     return props

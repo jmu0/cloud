@@ -110,3 +110,7 @@ def getGuests():
 
 def getShares():
     return getFromSocket('shares')
+
+
+def getMounts():
+    return getFromSocket('mounts')

@@ -20,3 +20,5 @@ elif sys.argv[1] == 'guests':
     printer.printGuestList(scanner.getGuests())
 elif sys.argv[1] == 'shares':
     printer.printShareList(scanner.getShares())
+elif sys.argv[1] == 'mounts':
+    printer.printMountList(scanner.getMounts())
