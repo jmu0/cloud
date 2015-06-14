@@ -17,4 +17,4 @@ elif sys.argv[1] == 'scan':
 elif sys.argv[1] == 'servers':
     printer.printServerList(scanner.getServers())
 elif sys.argv[1] == 'guests':
-    printer.printServerList(scanner.getGuests())
+    printer.printGuestList(scanner.getGuests())
