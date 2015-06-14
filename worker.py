@@ -24,6 +24,7 @@ def run():
         print(str(e))
     s.listen(256)
     print('Listening on  port ' + str(port))
+    # TODO: threaded process to check if servers are still alive
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
