@@ -20,7 +20,7 @@ def getShares():
 
 def getMounts():
     mounts = []
-    f = os.popen('df -h -t nfs')
+    f = os.popen('df -h -t nfs 2> /dev/null')
     lines = f.read()
     lines = str(lines).splitlines()[1:]
     f.close()
@@ -74,6 +74,6 @@ def shareToLine(share):
     # TODO: create /etc/exports line from share
     pass
 
-
+# arch: enable * start rpcbind.service + nfs-server.service
 # exportfs -rav
 # /nfs/test 10.0.0.1/24(rw,sync,subtree_check,no_root_squash)
