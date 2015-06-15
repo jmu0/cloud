@@ -14,10 +14,10 @@ def run():
     global cloud
     global cloud_lock
     with cloud_lock:
-        cloud.append(server.getServerProps())
-        # print(cloud)
+        localhost = server.getServerProps()
+        localhost['lastPing'] = time.time()
+        cloud.append(localhost)
         cloud += scanner.scanCloud()
-        # print(cloud)
 
     host = server.getHostName()
     port = scanner.getCloudPort()
@@ -29,7 +29,6 @@ def run():
         print(str(e))
     s.listen(256)
     print('Listening on  port ' + str(port))
-    # TODO: threaded process to check if servers are still alive
     t_scanner = threading.Thread(target=threaded_scanner)
     t_scanner.daemon = True
     t_scanner.start()
@@ -37,15 +36,6 @@ def run():
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
         data = conn.recv(5120)
-        # data = b''
-        # while True:
-        #     buf = conn.recv(5120)
-        #     data += buf
-        #     print('buffer: ' + str(buf))
-        #     # if not buf:
-        #     if not buf or str(buf).find('\n'):
-        #         print('not buffer')
-        #         break
         data = data.decode()
         cmd = data.split()
         if (cmd):
@@ -63,11 +53,9 @@ def doCommand(cmd):
         return servers
     if cmd[0] == 'handshake':
         data = ''.join(cmd[1:])
-        # print('====start json')
-        # print(data)
-        # print('====end json')
         s = json.loads(data)
         cloudAddServer(s)
+        print('handshake from :' + s['ip'])
         props = server.getServerProps()
         props = json.dumps(props)
         return props
@@ -88,9 +76,25 @@ def doCommand(cmd):
 def threaded_scanner():
     global cloud
     global cloud_lock
+    pingTime = 5
+    localIp = server.getServerIP(server.getHostName())
     while True:
-        print('scan')
-        time.sleep(5)
+        print('threaded scan')
+        delete = []
+        with cloud_lock:
+            for s in range(len(cloud)):
+                if not cloud[s]['ip'] == localIp:
+                    print('check '+cloud[s]['name'])
+                    if time.time() - cloud[s]['lastPing'] > pingTime:
+                        cloud[s] = scanner.handshake(cloud[s]['ip'])
+                        if not cloud[s]:
+                            delete.append(s)
+                    else:
+                        print('not scanning '+cloud[s]['name'])
+            for i in delete:
+                del cloud[i]
+        print('end threaded scan \n')
+        time.sleep(pingTime)
 
 
 def cloudHasServer(srv):
@@ -111,6 +115,7 @@ def cloudAddServer(srv):
     '''add a server to the cloud'''
     global cloud
     global cloud_lock
+    srv['lastPing'] = time.time()
     if not cloudHasServer(srv):  # add server to cloud
         with cloud_lock:
             cloud.append(srv)

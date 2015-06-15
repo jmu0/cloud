@@ -1,6 +1,7 @@
 import socket
 import json
 import server
+import time
 
 
 def getCloudPort():
@@ -35,29 +36,28 @@ def scanCloud():
     cloud = []
     # print(ips)
     for ip in ips:
-        print('scanning ' + ip)
+        cloud.append(handshake(ip))
+    return cloud
+
+
+def handshake(ip):
+    print('handshake to: ' + ip)
+    try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.1)
         s.connect((ip, getCloudPort()))
         cmd = 'handshake ' + json.dumps(server.getServerProps())
         # cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
         data = s.recv(5120)
-        # data = b''
-        # while True:
-        #     buf = s.recv(1024)
-        #     data += buf
-        #     # if not buf or str(buf).find('\n'):
-        #     if not buf:
-        #         break
-        try:
-            data = data.decode()
-            data = json.loads(data)
-            cloud.append(data)
-        except:
-            print('Cannot decode json: ' + str(data))
-            pass
-    return cloud
+        data = data.decode()
+        data = json.loads(data)
+        data['lastPing'] = time.time()
+        return data
+    except:
+        print('handshake failed: ' + str(ip))
+        return False
 
 
 def getFirstServer():
