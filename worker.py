@@ -35,15 +35,16 @@ def run():
     while True:
         conn, addr = s.accept()
         print('connection from: ' + addr[0] + ":" + str(addr[1]))
-        data = conn.recv(5120, socket.MSG_WAITALL)
+        # data = conn.recv(5120, socket.MSG_WAITALL)
+        data = conn.recv(5120)
         data = data.decode()
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
-            # print('-----result-----')
-            # print(result)
-            # print('-----end result-----')
-            # print('length: ' + str(len(result)))
+            print('-----result-----')
+            print(result)
+            print('-----end result-----')
+            print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
 
@@ -89,6 +90,8 @@ def threaded_scanner():
         deleteIP = []
         with cloud_lock:
             for s in range(len(cloud)):
+                print(cloud[s])
+                print(localIp)
                 if not cloud[s]['ip'] == localIp:
                     # print('check '+cloud[s]['name'])
                     if time.time() - cloud[s]['lastPing'] > pingTime:

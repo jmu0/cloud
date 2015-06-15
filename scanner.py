@@ -36,28 +36,30 @@ def scanCloud():
     cloud = []
     # print(ips)
     for ip in ips:
-        cloud.append(handshake(ip))
+        srv = handshake(ip)
+        if (srv):
+            cloud.append(srv)
     return cloud
 
 
 def handshake(ip):
     print('handshake to: ' + ip)
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.5)
-        s.connect((ip, getCloudPort()))
-        cmd = 'handshake ' + json.dumps(server.getServerProps())
-        # cmd += '\n'
-        cmd = cmd.encode()
-        s.sendall(cmd)
-        data = s.recv(5120, socket.MSG_WAITALL)
-        data = data.decode()
-        data = json.loads(data)
-        data['lastPing'] = time.time()
-        return data
-    except:
-        print('handshake failed: ' + str(ip))
-        return False
+    # try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.5)
+    s.connect((ip, getCloudPort()))
+    cmd = 'handshake ' + json.dumps(server.getServerProps())
+    # cmd += '\n'
+    cmd = cmd.encode()
+    s.sendall(cmd)
+    data = s.recv(5120)
+    data = data.decode()
+    data = json.loads(data)
+    data['lastPing'] = time.time()
+    return data
+    # except:
+    #     print('handshake failed: ' + str(ip))
+    #     return False
 
 
 def getFirstServer():
@@ -86,7 +88,7 @@ def getFromSocket(command):
         s.connect((ip, getCloudPort()))
         cmd = command
         cmd = cmd.encode()
-        s.send(cmd)
+        s.sendall(cmd)
         data = s.recv(5 * 1024, socket.MSG_WAITALL)
         # data = b''
         # while True:
