@@ -43,3 +43,14 @@ def getGuestList():
             }
             list.append(item)
     return list
+
+
+def migrate(guest_name, to_server_name):
+    cmd = "virsh migrate --live --unsafe" + guest_name
+    cmd += " qemu+ssh://" + to_server_name + "/system"
+    print("migrate command: " + str(cmd))
+    f = os.popen(cmd)
+    txt = f.read()[0:-1]
+    f.close()
+    print("migrate response: " + str(txt))
+    return txt

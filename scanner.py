@@ -46,7 +46,7 @@ def handshake(ip):
     print('handshake to: ' + ip)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.5)
+        s.settimeout(0.8)
         s.connect((ip, getCloudPort()))
         cmd = 'handshake ' + json.dumps(server.getServerProps())
         # cmd += '\n'
@@ -89,7 +89,7 @@ def getFromSocket(command):
         cmd = command
         cmd = cmd.encode()
         s.sendall(cmd)
-        data = s.recv(5 * 1024, socket.MSG_WAITALL)
+        data = s.recv(10 * 1024, socket.MSG_WAITALL)
         # data = b''
         # while True:
         #     buf = s.recv(1024)
