@@ -80,12 +80,14 @@ def getFromSocket(command):
     '''get data from running cloud instance'''
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ip = getFirstServer()
+    print(ip)
+
     if (ip):
         s.connect((ip, getCloudPort()))
         cmd = command
         cmd = cmd.encode()
         s.send(cmd)
-        data = s.recv(5120)
+        data = s.recv(10240)
         # data = b''
         # while True:
         #     buf = s.recv(1024)
@@ -99,6 +101,7 @@ def getFromSocket(command):
             return data
         except:
             print('Cannot decode json: ' + str(data))
+            print('length: ' + str(len(data)))
             return False
     else:
         return False
