@@ -19,7 +19,7 @@ def printHeader(keys):
     line = ''
     underline = ''
     # print header
-    for key in keys:
+    for key in sorted(keys.keys()):
         field = key
         while len(field) < keys[key] + margin:
             field += ' '
@@ -41,7 +41,7 @@ def printListOfDictionaries(keys, lst):
     # print table
     for s in lst:
         line = ''
-        for key in keys:
+        for key in sorted(keys.keys()):
             if s[key]:
                 if type(s[key]) == 'list':
                     field = str(len(s[key]))
