@@ -39,15 +39,17 @@ def scanCloud():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, getCloudPort()))
         cmd = 'handshake ' + json.dumps(server.getServerProps())
+        # cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
-        data = b''
-        while True:
-            buf = s.recv(1024)
-            data += buf
-            # if not buf or str(buf).find('\n'):
-            if not buf:
-                break
+        data = s.recv(5120)
+        # data = b''
+        # while True:
+        #     buf = s.recv(1024)
+        #     data += buf
+        #     # if not buf or str(buf).find('\n'):
+        #     if not buf:
+        #         break
         try:
             data = data.decode()
             data = json.loads(data)
@@ -83,13 +85,14 @@ def getFromSocket(command):
         cmd = command
         cmd = cmd.encode()
         s.send(cmd)
-        data = b''
-        while True:
-            buf = s.recv(1024)
-            data += buf
-            # if not buf or str(buf).find('\n'):
-            if not buf:
-                break
+        data = s.recv(5120)
+        # data = b''
+        # while True:
+        #     buf = s.recv(1024)
+        #     data += buf
+        #     # if not buf or str(buf).find('\n'):
+        #     if not buf:
+        #         break
         try:
             data = data.decode()
             data = json.loads(data)

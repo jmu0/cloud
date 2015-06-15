@@ -28,15 +28,16 @@ def run():
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
-        data = b''
-        while True:
-            buf = conn.recv(1024)
-            print('buffer: ' + str(buf))
-            # if not buf or str(buf).find('\n'):
-            if not buf:
-                print('not buffer')
-                break
-            data += buf
+        data = conn.recv(5120)
+        # data = b''
+        # while True:
+        #     buf = conn.recv(5120)
+        #     data += buf
+        #     print('buffer: ' + str(buf))
+        #     # if not buf:
+        #     if not buf or str(buf).find('\n'):
+        #         print('not buffer')
+        #         break
         data = data.decode()
         cmd = data.split()
         if (cmd):
