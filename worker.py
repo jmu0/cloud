@@ -34,21 +34,22 @@ def run():
     t_scanner.start()
     while True:
         conn, addr = s.accept()
-        print('connected to: ' + addr[0] + ":" + str(addr[1]))
+        print('connection from: ' + addr[0] + ":" + str(addr[1]))
         data = conn.recv(5120, socket.MSG_WAITALL)
         data = data.decode()
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
-            print('-----result-----')
-            print(result)
-            print('-----end result-----')
-            print('length: ' + str(len(result)))
+            # print('-----result-----')
+            # print(result)
+            # print('-----end result-----')
+            # print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
 
 
 def doCommand(cmd):
+    '''do command received from socket connection'''
     global cloud_lock
     '''do command from port'''
     if cmd[0] == 'servers':
@@ -78,30 +79,30 @@ def doCommand(cmd):
 
 
 def threaded_scanner():
+    '''thread to scan and update cloud'''
     global cloud
     global cloud_lock
     pingTime = 5
     localIp = server.getServerIP(server.getHostName())
     while True:
-        print('threaded scan')
+        # print('threaded scan')
         deleteIP = []
         with cloud_lock:
             for s in range(len(cloud)):
                 if not cloud[s]['ip'] == localIp:
-                    print('check '+cloud[s]['name'])
+                    # print('check '+cloud[s]['name'])
                     if time.time() - cloud[s]['lastPing'] > pingTime:
                         ip = cloud[s]['ip']
                         cloud[s] = scanner.handshake(cloud[s]['ip'])
                         if not cloud[s]:
                             deleteIP.append(ip)
-                    else:
-                        print('not scanning '+cloud[s]['name'])
+                    # else: print('not scanning '+cloud[s]['name'])
             for ip in deleteIP:
                 for s in range(len(cloud)):
                     if not cloud[s]:
                         del cloud[s]
                         break
-        print('end threaded scan \n')
+        # print('end threaded scan \n')
         time.sleep(pingTime)
 
 
