@@ -2,17 +2,22 @@ import server
 import scanner
 import socket
 import json
+import threading
+import time
 
 cloud = []
+cloud_lock = threading.Lock()
 
 
 def run():
     '''run server, listen on port'''
     global cloud
-    cloud.append(server.getServerProps())
-    # print(cloud)
-    cloud += scanner.scanCloud()
-    # print(cloud)
+    global cloud_lock
+    with cloud_lock:
+        cloud.append(server.getServerProps())
+        # print(cloud)
+        cloud += scanner.scanCloud()
+        # print(cloud)
 
     host = server.getHostName()
     port = scanner.getCloudPort()
@@ -25,6 +30,9 @@ def run():
     s.listen(256)
     print('Listening on  port ' + str(port))
     # TODO: threaded process to check if servers are still alive
+    t_scanner = threading.Thread(target=threaded_scanner)
+    t_scanner.daemon = True
+    t_scanner.start()
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
@@ -47,15 +55,17 @@ def run():
 
 
 def doCommand(cmd):
+    global cloud_lock
     '''do command from port'''
     if cmd[0] == 'servers':
-        servers = json.dumps(cloud)
+        with cloud_lock:
+            servers = json.dumps(cloud)
         return servers
     if cmd[0] == 'handshake':
         data = ''.join(cmd[1:])
-        print('====start json')
-        print(data)
-        print('====end json')
+        # print('====start json')
+        # print(data)
+        # print('====end json')
         s = json.loads(data)
         cloudAddServer(s)
         props = server.getServerProps()
@@ -75,52 +85,70 @@ def doCommand(cmd):
         return mounts
 
 
+def threaded_scanner():
+    global cloud
+    global cloud_lock
+    while True:
+        print('scan')
+        time.sleep(5)
+
+
 def cloudHasServer(srv):
     '''return boolean if server exists in the cloud'''
     global cloud
-    for s in cloud:
-        try:
-            if s['ip'] == srv['ip']:
-                return True
-        except:
-            print(s)
-            print(srv)
+    with cloud_lock:
+        for s in cloud:
+            try:
+                if s['ip'] == srv['ip']:
+                    return True
+            except:
+                print(s)
+                print(srv)
     return False
 
 
 def cloudAddServer(srv):
     '''add a server to the cloud'''
     global cloud
+    global cloud_lock
     if not cloudHasServer(srv):  # add server to cloud
-        cloud.append(srv)
+        with cloud_lock:
+            cloud.append(srv)
     else:  # replace existing server
-        for i in range(len(cloud)):
-            if cloud[i]['ip'] == srv['ip']:
-                cloud[i] = srv
+        with cloud_lock:
+            for i in range(len(cloud)):
+                if cloud[i]['ip'] == srv['ip']:
+                    cloud[i] = srv
 
 
 def getGuestList():
     '''return list of all vm's in the cloud'''
     global cloud
+    global cloud_lock
     vmlist = []
-    for s in cloud:
-        vmlist = vmlist + s['guests']
+    with cloud_lock:
+        for s in cloud:
+            vmlist = vmlist + s['guests']
     return vmlist
 
 
 def getShareList():
     '''return list of all nfs shares in the cloud'''
     global cloud
+    global cloud_lock
     shares = []
-    for s in cloud:
-        shares = shares + s['shares']
+    with cloud_lock:
+        for s in cloud:
+            shares = shares + s['shares']
     return shares
 
 
 def getMountList():
     '''return list of all nfs shares in the cloud'''
     global cloud
+    global cloud_lock
     mounts = []
-    for s in cloud:
-        mounts = mounts + s['mounts']
+    with cloud_lock:
+        for s in cloud:
+            mounts = mounts + s['mounts']
     return mounts
