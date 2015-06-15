@@ -50,7 +50,7 @@ def handshake(ip):
         # cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
-        data = s.recv(5120)
+        data = s.recv(5120, socket.MSG_WAITALL)
         data = data.decode()
         data = json.loads(data)
         data['lastPing'] = time.time()
@@ -87,7 +87,7 @@ def getFromSocket(command):
         cmd = command
         cmd = cmd.encode()
         s.send(cmd)
-        data = s.recv(5 * 1024)
+        data = s.recv(5 * 1024, socket.MSG_WAITALL)
         # data = b''
         # while True:
         #     buf = s.recv(1024)

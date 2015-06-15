@@ -35,7 +35,7 @@ def run():
     while True:
         conn, addr = s.accept()
         print('connected to: ' + addr[0] + ":" + str(addr[1]))
-        data = conn.recv(5120)
+        data = conn.recv(5120, socket.MSG_WAITALL)
         data = data.decode()
         cmd = data.split()
         if (cmd):
