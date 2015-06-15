@@ -87,7 +87,7 @@ def getFromSocket(command):
         cmd = command
         cmd = cmd.encode()
         s.send(cmd)
-        data = s.recv(10240)
+        data = s.recv(5 * 1024)
         # data = b''
         # while True:
         #     buf = s.recv(1024)

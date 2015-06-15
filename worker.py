@@ -40,6 +40,10 @@ def run():
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
+            print('-----result-----')
+            print(result)
+            print('-----end result-----')
+            print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
 
@@ -80,19 +84,23 @@ def threaded_scanner():
     localIp = server.getServerIP(server.getHostName())
     while True:
         print('threaded scan')
-        delete = []
+        deleteIP = []
         with cloud_lock:
             for s in range(len(cloud)):
                 if not cloud[s]['ip'] == localIp:
                     print('check '+cloud[s]['name'])
                     if time.time() - cloud[s]['lastPing'] > pingTime:
+                        ip = cloud[s]['ip']
                         cloud[s] = scanner.handshake(cloud[s]['ip'])
                         if not cloud[s]:
-                            delete.append(s)
+                            deleteIP.append(ip)
                     else:
                         print('not scanning '+cloud[s]['name'])
-            for i in delete:
-                del cloud[i]
+            for ip in deleteIP:
+                for s in range(len(cloud)):
+                    if not cloud[s]:
+                        del cloud[s]
+                        break
         print('end threaded scan \n')
         time.sleep(pingTime)
 
