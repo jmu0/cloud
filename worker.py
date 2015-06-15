@@ -31,9 +31,12 @@ def run():
         data = b''
         while True:
             buf = conn.recv(1024)
-            data += buf
-            if not buf or str(buf).find('\n'):
+            print('buffer: ' + str(buf))
+            # if not buf or str(buf).find('\n'):
+            if not buf:
+                print('not buffer')
                 break
+            data += buf
         data = data.decode()
         cmd = data.split()
         if (cmd):
@@ -49,6 +52,9 @@ def doCommand(cmd):
         return servers
     if cmd[0] == 'handshake':
         data = ''.join(cmd[1:])
+        print('====start json')
+        print(data)
+        print('====end json')
         s = json.loads(data)
         cloudAddServer(s)
         props = server.getServerProps()

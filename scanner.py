@@ -39,6 +39,7 @@ def scanCloud():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, getCloudPort()))
         cmd = 'handshake ' + json.dumps(server.getServerProps())
+        cmd = cmd + '\n'
         cmd = cmd.encode()
         s.send(cmd)
         data = b''
