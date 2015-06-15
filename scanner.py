@@ -97,6 +97,7 @@ def getFromSocket(command):
         #         break
         try:
             data = data.decode()
+            print('length: ' + str(len(data)))
             data = json.loads(data)
             return data
         except:
