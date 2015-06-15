@@ -44,22 +44,22 @@ def scanCloud():
 
 def handshake(ip):
     print('handshake to: ' + ip)
-    # try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(0.5)
-    s.connect((ip, getCloudPort()))
-    cmd = 'handshake ' + json.dumps(server.getServerProps())
-    # cmd += '\n'
-    cmd = cmd.encode()
-    s.sendall(cmd)
-    data = s.recv(5120)
-    data = data.decode()
-    data = json.loads(data)
-    data['lastPing'] = time.time()
-    return data
-    # except:
-    #     print('handshake failed: ' + str(ip))
-    #     return False
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.5)
+        s.connect((ip, getCloudPort()))
+        cmd = 'handshake ' + json.dumps(server.getServerProps())
+        # cmd += '\n'
+        cmd = cmd.encode()
+        s.sendall(cmd)
+        data = s.recv(5120)
+        data = data.decode()
+        data = json.loads(data)
+        data['lastPing'] = time.time()
+        return data
+    except:
+        print('handshake failed: ' + str(ip))
+        return False
 
 
 def getFirstServer():

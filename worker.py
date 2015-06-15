@@ -90,8 +90,8 @@ def threaded_scanner():
         deleteIP = []
         with cloud_lock:
             for s in range(len(cloud)):
-                print(cloud[s])
-                print(localIp)
+                # print(cloud[s])
+                # print(localIp)
                 if not cloud[s]['ip'] == localIp:
                     # print('check '+cloud[s]['name'])
                     if time.time() - cloud[s]['lastPing'] > pingTime:
