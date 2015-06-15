@@ -41,10 +41,10 @@ def run():
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
-            print('-----result-----')
-            print(result)
-            print('-----end result-----')
-            print('length: ' + str(len(result)))
+            # print('-----result-----')
+            # print(result)
+            # print('-----end result-----')
+            # print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
 
