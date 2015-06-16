@@ -77,6 +77,10 @@ def doCommand(cmd):
         mounts = getMountList()
         mounts = json.dumps(mounts)
         return mounts
+    if cmd[0] == 'migrate':
+        guest_name = cmd[1]
+        to_host_name = cmd[2]
+        return 'migrate ' + guest_name + ' to ' + to_host_name
 
 
 def threaded_scanner():
