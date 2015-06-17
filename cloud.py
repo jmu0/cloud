@@ -26,7 +26,7 @@ elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
         guest = sys.argv[2]
         to_server = sys.argv[3]
-        command = 'migrate ' + guest + ' ' + to_server
+        command = 'cmd {"action":"migrate","guest":"' + guest + '","to_server":"' + to_server + '"}'
         resp = scanner.getFromSocket(command)
         print(resp)
     else:
