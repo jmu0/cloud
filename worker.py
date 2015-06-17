@@ -7,12 +7,14 @@ import time
 
 cloud = []
 cloud_lock = threading.Lock()
+print_lock = threading.Lock()
 
 
 def run():
     '''run server, listen on port'''
     global cloud
     global cloud_lock
+    global print_lock
     with cloud_lock:
         localhost = server.getServerProps()
         localhost['lastPing'] = time.time()
@@ -26,15 +28,18 @@ def run():
     try:
         s.bind((host, port))
     except socket.error as e:
-        print(str(e))
+        with print_lock:
+            print(str(e))
     s.listen(256)
-    print('Listening on  port ' + str(port))
+    with print_lock:
+        print('Listening on  port ' + str(port))
     t_scanner = threading.Thread(target=threaded_scanner)
     t_scanner.daemon = True
     t_scanner.start()
     while True:
         conn, addr = s.accept()
-        print('connection from: ' + addr[0] + ":" + str(addr[1]))
+        with print_lock:
+            print('connection from: ' + addr[0] + ":" + str(addr[1]))
         # data = conn.recv(5120, socket.MSG_WAITALL)
         data = conn.recv(5120)
         data = data.decode()
@@ -52,6 +57,7 @@ def run():
 def doCommand(cmd):
     '''do command received from socket connection'''
     global cloud_lock
+    global print_lock
     '''do command from port'''
     if cmd[0] == 'servers':
         with cloud_lock:
@@ -61,7 +67,8 @@ def doCommand(cmd):
         data = ''.join(cmd[1:])
         s = json.loads(data)
         cloudAddServer(s)
-        print('handshake from :' + s['ip'])
+        with print_lock:
+            print('handshake from :' + s['ip'])
         props = server.getServerProps()
         props = json.dumps(props)
         return props
@@ -78,7 +85,15 @@ def doCommand(cmd):
         mounts = json.dumps(mounts)
         return mounts
     if cmd[0] == 'cmd':
-        return cmd[1]
+        try:
+            cmd = json.loads(cmd[1])
+        except:
+            return 'invalid json: ' + str(cmd[1])
+        if cmd['action'] == 'migrate':
+            return migrate(cmd)
+        elif cmd['action'] == 'migrateAll':
+            pass
+        return 'invalid action: ' + str(cmd['action'])
 
 
 def threaded_scanner():
@@ -111,17 +126,25 @@ def threaded_scanner():
         time.sleep(pingTime)
 
 
+def threaded_migrate(guest, to_server):
+    pass
+
+
+
 def cloudHasServer(srv):
     '''return boolean if server exists in the cloud'''
     global cloud
+    global cloud_lock
+    global print_lock
     with cloud_lock:
         for s in cloud:
             try:
                 if s['ip'] == srv['ip']:
                     return True
             except:
-                print(s)
-                print(srv)
+                with print_lock:
+                    print(s)
+                    print(srv)
     return False
 
 
