@@ -1,4 +1,5 @@
 import server
+import hypervisor
 import scanner
 import socket
 import json
@@ -52,6 +53,34 @@ def run():
             # print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
+
+
+def migrate(cmd):
+    # TODO: move to hypervisor module
+    guest_name = cmd['guest']
+    to_server = cmd['to_server']
+    guests = getGuestList()
+    localhost_name = server.getHostName()
+    guest = False
+    for g in guests:
+        if g['name'] == guest_name:
+            guest = g
+            break
+    if guest:
+        if guest['host'] == localhost_name:
+            # Migrate
+            args = [guest_name, to_server]
+            t_migrate = threading.Thread(target=threaded_migrate, args=args)
+            t_migrate.daemon = True
+            t_migrate.start()
+        else:
+            # Send migrate job to guest's host
+            cmd = json.dumps(cmd)
+            ip = socket.gethostbyname(guest['host'])
+            print('Sending migrate command to: ' + guest['host'])
+            scanner.getFromSocket(command=cmd, ip=ip)
+    else:
+        return 'Guest ' + guest_name + ' not found'
 
 
 def doCommand(cmd):
@@ -127,8 +156,7 @@ def threaded_scanner():
 
 
 def threaded_migrate(guest, to_server):
-    pass
-
+    hypervisor.migrate(guest, to_server)
 
 
 def cloudHasServer(srv):

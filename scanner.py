@@ -78,10 +78,11 @@ def getFirstServer():
     return False
 
 
-def getFromSocket(command):
+def getFromSocket(command='', ip=None):
     '''get data from running cloud instance'''
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ip = getFirstServer()
+    if not ip:
+        ip = getFirstServer()
     # print(ip)
 
     if (ip):

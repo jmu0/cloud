@@ -52,5 +52,8 @@ def migrate(guest_name, to_server_name):
     f = os.popen(cmd)
     txt = f.read()[0:-1]
     f.close()
-    print("migrate response: " + str(txt))
+    txt = str(txt)
+    if txt == '':
+        txt = 'OK'
+    print("migrate response: " + txt)
     return txt
