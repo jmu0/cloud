@@ -44,7 +44,7 @@ def run():
         # data = conn.recv(5120, socket.MSG_WAITALL)
         data = conn.recv(5120)
         data = data.decode()
-        print('received command: ' + str(data))
+        # print('received command: ' + str(data))
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
@@ -70,6 +70,7 @@ def migrate(cmd):
     if guest:
         if guest['host'] == localhost_name:
             # Migrate
+            print('start migrate thread')
             args = [guest_name, to_server]
             t_migrate = threading.Thread(target=threaded_migrate, args=args)
             t_migrate.daemon = True
