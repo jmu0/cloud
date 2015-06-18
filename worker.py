@@ -44,6 +44,7 @@ def run():
         # data = conn.recv(5120, socket.MSG_WAITALL)
         data = conn.recv(5120)
         data = data.decode()
+        print('received command: ' + str(data))
         cmd = data.split()
         if (cmd):
             result = doCommand(cmd)
