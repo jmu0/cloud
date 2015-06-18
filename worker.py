@@ -117,7 +117,8 @@ def doCommand(cmd):
         return mounts
     if cmd[0] == 'cmd':
         try:
-            cmd = json.loads(cmd[1])
+            cmd = ''.join(cmd[1:])
+            cmd = json.loads(cmd)
         except:
             return 'invalid json: ' + str(cmd[1])
         if cmd['action'] == 'migrate':
