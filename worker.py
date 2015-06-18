@@ -97,8 +97,8 @@ def doCommand(cmd):
         data = ''.join(cmd[1:])
         s = json.loads(data)
         cloudAddServer(s)
-        with print_lock:
-            print('handshake from :' + s['ip'])
+        # with print_lock:
+        #     print('handshake from :' + s['ip'])
         props = server.getServerProps()
         props = json.dumps(props)
         return props

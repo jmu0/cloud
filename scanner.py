@@ -43,7 +43,7 @@ def scanCloud():
 
 
 def handshake(ip):
-    print('handshake to: ' + ip)
+    # print('handshake to: ' + ip)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(0.8)
