@@ -77,7 +77,7 @@ def migrate(cmd):
             t_migrate.start()
         else:
             # Send migrate job to guest's host
-            cmd = json.dumps(cmd)
+            cmd = 'cmd ' + json.dumps(cmd)
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
             scanner.getFromSocket(command=cmd, ip=ip)
