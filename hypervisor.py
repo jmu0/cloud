@@ -1,6 +1,7 @@
 import os
 import socket
 
+# TODO: balance load between hypervisors??
 
 def isHypervisor():
     with os.popen('which virsh') as f:

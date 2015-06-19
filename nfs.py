@@ -1,6 +1,10 @@
 import os
 import socket
 
+# TODO: add create share
+# TODO: add mount command
+# TODO: add sync 
+# TODO: migrate share (in guest xml = master)
 
 def isNfsServer():
     return os.path.isfile('/etc/exports')

@@ -13,6 +13,7 @@ def getHostName():
 
 def getServerProps():
     '''get properties of localhost'''
+    # TODO: get system load /memory stats
     props = {}
     props['name'] = getHostName()
     props['ip'] = getServerIP(props['name'])
