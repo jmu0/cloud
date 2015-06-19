@@ -2,6 +2,7 @@ import socket
 import json
 import server
 import time
+import sys
 
 
 def getCloudPort():
