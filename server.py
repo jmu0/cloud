@@ -1,7 +1,7 @@
+import time
 import socket
 import hypervisor
 import nfs
-
 
 def getServerIP(name):
     return socket.gethostbyname(name)
@@ -32,4 +32,5 @@ def getServerProps():
         props['is_nfs_server'] = 'False'
         props['shares'] = []
     props['mounts'] = nfs.getMounts()
+    props['lastPing'] = time.time()
     return props
