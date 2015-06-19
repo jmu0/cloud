@@ -147,7 +147,9 @@ def threaded_scanner():
                             deleteIP.append(ip)
                 else: 
                     # update localhost
-                    cloud[s] = server.getServerProps()
+                    if time.time() - cloud[s]['lastPing'] > pingTime:
+                        print('scanner updates localhost')
+                        cloud[s] = server.getServerProps()
             for ip in deleteIP:
                 for s in range(len(cloud)):
                     if not cloud[s]:
