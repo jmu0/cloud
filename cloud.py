@@ -4,6 +4,11 @@ import server
 import printer
 import sys
 import worker
+import os
+
+
+os.environ['PYTHONUNBUFFERED'] = 'True' # for redirecting stdout to log file
+
 
 if len(sys.argv) == 1:
     # TODO: write help.txt file
