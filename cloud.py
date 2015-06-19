@@ -24,9 +24,18 @@ elif sys.argv[1] == 'mounts':
     printer.printMountList(scanner.getMounts())
 elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
+        ''' migrate guest to server'''
         guest = sys.argv[2]
         to_server = sys.argv[3]
         command = 'cmd {"action":"migrate","guest":"' + guest + '","to_server":"' + to_server + '"}'
+        resp = scanner.getFromSocket(command)
+        print(resp)
+    elif len(sys.argv) == 5 and sys.argv[2] == 'all':
+        ''' migrate all '''
+        from_server = sys.argv[3]
+        to_server = sys.argv[4]
+        command =  'cmd {"action":"migrateAll","from_server":"' + from_server
+        command += '","to_server":"' + to_server + '"}'
         resp = scanner.getFromSocket(command)
         print(resp)
     else:

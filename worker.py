@@ -56,10 +56,7 @@ def run():
         conn.close()
 
 
-def migrate(cmd):
-    # TODO: move to hypervisor module
-    guest_name = cmd['guest']
-    to_server = cmd['to_server']
+def migrate(guest_name, to_server):
     guests = getGuestList()
     localhost_name = server.getHostName()
     guest = False
@@ -77,12 +74,30 @@ def migrate(cmd):
             t_migrate.start()
         else:
             # Send migrate job to guest's host
-            cmd = 'cmd ' + json.dumps(cmd)
+            cmd =  'cmd {"action":"migrate","guest":"' + guest_name
+            cmd += '","to_server":"' + to_server + '"}' 
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
             scanner.getFromSocket(command=cmd, ip=ip)
     else:
         return 'Guest ' + guest_name + ' not found'
+
+
+def migrateAll(from_server, to_server):
+    ''' migrate all guests from one host to another '''
+    localhost_name = server.getHostName()
+    if from_server == localhost_name:
+        guests = getGuestList()
+        for guest in guests:
+            if guest['host'] == localhost_name:
+                migrate(guest['name'], to_server)
+    else:
+        # Send migrate job to guest's host
+        cmd =  'cmd {"action":"migrateAll","from_server":"' + from_server
+        cmd += '","to_server":"' + to_server + '"}' 
+        ip = socket.gethostbyname(from_server)
+        print('Sending migrateAll command to: ' + from_server)
+        scanner.getFromSocket(command=cmd, ip=ip)
 
 
 def doCommand(cmd):
@@ -122,9 +137,9 @@ def doCommand(cmd):
         except:
             return 'invalid json: ' + str(cmd[1])
         if cmd['action'] == 'migrate':
-            return migrate(cmd)
+            return migrate(cmd['guest'], cmd['to_server'])
         elif cmd['action'] == 'migrateAll':
-            pass
+            return migrateAll(cmd['from_server'], cmd['to_server'])
         return 'invalid action: ' + str(cmd['action'])
 
 
@@ -148,7 +163,6 @@ def threaded_scanner():
                 else: 
                     # update localhost
                     if time.time() - cloud[s]['lastPing'] > pingTime:
-                        print('scanner updates localhost')
                         cloud[s] = server.getServerProps()
             for ip in deleteIP:
                 for s in range(len(cloud)):

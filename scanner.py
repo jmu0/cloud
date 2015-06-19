@@ -48,7 +48,7 @@ def handshake(ip):
     # print('handshake to: ' + ip)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.8)
+        s.settimeout(2)
         s.connect((ip, getCloudPort()))
         cmd = 'handshake ' + json.dumps(server.getServerProps())
         # cmd += '\n'
@@ -60,7 +60,7 @@ def handshake(ip):
         data['lastPing'] = time.time()
         return data
     except:
-        print('handshake failed: ' + str(ip) + "err: " + str(sys.exc_info()[0]))
+        print('handshake failed: ' + str(ip) + " error: " + str(sys.exc_info()[0]))
         return False
 
 
