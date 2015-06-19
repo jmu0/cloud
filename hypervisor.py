@@ -3,9 +3,8 @@ import socket
 
 
 def isHypervisor():
-    f = os.popen('which virsh')
-    version = f.read()[0:-1]
-    f.close()
+    with os.popen('which virsh') as f:
+        version = f.read()[0:-1]
     if len(version) > 0:
         return True
     else:
@@ -14,9 +13,8 @@ def isHypervisor():
 
 def getVirshVersion():
     if (isHypervisor()):
-        f = os.popen('virsh --version')
-        version = f.read()[0:-1]
-        f.close()
+        with os.popen('virsh --version') as f:
+            version = f.read()[0:-1]
         if len(version) > 0:
             return version
         else:
@@ -27,9 +25,8 @@ def getVirshVersion():
 
 def getGuestList():
     servername = socket.gethostname()
-    f = os.popen('virsh list')
-    txt = f.read()[0:-1]
-    f.close()
+    with os.popen('virsh list') as f:
+        txt = f.read()[0:-1]
     txt = txt.split('\n')[2:]
     list = []
     for l in txt:
@@ -49,9 +46,8 @@ def migrate(guest_name, to_server_name):
     cmd = "virsh migrate --live --unsafe " + guest_name
     cmd += " qemu+ssh://" + to_server_name + "/system"
     print("migrate command: " + str(cmd))
-    f = os.popen(cmd)
-    txt = f.read()[0:-1]
-    f.close()
+    with os.popen(cmd) as f:
+        txt = f.read()[0:-1]
     txt = str(txt)
     if txt == '':
         txt = 'OK'

@@ -89,12 +89,12 @@ def doCommand(cmd):
     '''do command received from socket connection'''
     global cloud_lock
     global print_lock
-    '''do command from port'''
     if cmd[0] == 'servers':
         with cloud_lock:
             servers = json.dumps(cloud)
         return servers
     if cmd[0] == 'handshake':
+        ''' receive handshake '''
         data = ''.join(cmd[1:])
         s = json.loads(data)
         cloudAddServer(s)
@@ -135,20 +135,19 @@ def threaded_scanner():
     pingTime = 5
     localIp = server.getServerIP(server.getHostName())
     while True:
-        # print('threaded scan')
         deleteIP = []
         with cloud_lock:
             for s in range(len(cloud)):
-                # print(cloud[s])
-                # print(localIp)
                 if not cloud[s]['ip'] == localIp:
-                    # print('check '+cloud[s]['name'])
+                    # handshake to remote server
                     if time.time() - cloud[s]['lastPing'] > pingTime:
                         ip = cloud[s]['ip']
                         cloud[s] = scanner.handshake(cloud[s]['ip'])
                         if not cloud[s]:
                             deleteIP.append(ip)
-                    # else: print('not scanning '+cloud[s]['name'])
+                else: 
+                    # update localhost
+                    cloud[s] = server.getServerProps()
             for ip in deleteIP:
                 for s in range(len(cloud)):
                     if not cloud[s]:

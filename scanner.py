@@ -43,6 +43,7 @@ def scanCloud():
 
 
 def handshake(ip):
+    ''' send handshake '''
     # print('handshake to: ' + ip)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
