@@ -60,7 +60,7 @@ def handshake(ip):
         data['lastPing'] = time.time()
         return data
     except:
-        print('handshake failed: ' + str(ip) + "err: " + sys.exc_info()[0])
+        print('handshake failed: ' + str(ip) + "err: " + str(sys.exc_info()[0]))
         return False
 
 
