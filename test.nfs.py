@@ -3,5 +3,10 @@ import nfs
 
 # shares = nfs.getShares()
 # print(shares)
-mounts = nfs.getMounts()
-print(mounts)
+share = {
+    'name': 'plex',
+    'network': '10.0.0.1/24',
+    'path': '/nfs/plex',
+    'server': 'mediaserver'
+}
+print(nfs.mount(share))

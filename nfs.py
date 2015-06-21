@@ -1,10 +1,8 @@
 import os
+import sys
 import socket
+import subprocess
 
-# TODO: add create share
-# TODO: add mount command
-# TODO: add sync 
-# TODO: migrate share (in guest xml = master)
 
 def isNfsServer():
     return os.path.isfile('/etc/exports')
@@ -78,6 +76,64 @@ def shareToLine(share):
     # TODO: create /etc/exports line from share
     pass
 
+
+def check_if_mounted(mountpoint):
+    ''' check if mountpoint is mounted '''
+    mounts = getMounts()
+    servername = socket.gethostname()
+    for m in mounts:
+        if m['mountpoint'] == mountpoint and m['server'] == servername:
+            return True
+    return False
+
+
+def mount(share):
+    ''' mount share '''
+    mountpoint = '/mnt/'
+    mountpoint += share['server'] + '/'
+    mountpoint += share['name']
+    # print(mountpoint)
+    if not check_if_mounted(mountpoint):
+        # print('not mounted')
+        sharepath = share['server'] + ':' + share['path']
+        # print(sharepath)
+        if not os.path.isdir(mountpoint):
+            # print('create path' + str(mountpoint))
+            cmd = ['mkdir', '-p', mountpoint]
+            res = subprocess.call(cmd)
+            if not res == 0:
+                print('could not create mountpoint')
+                print(str(sys.exc_info()[1]))
+                return False
+        cmd = ['mount', sharepath, mountpoint]
+        # print('mounting')
+        res = subprocess.call(cmd)
+        if not res == 0:
+            print('could not mount share')
+            print(str(sys.exc_info()[1]))
+            return False
+        else:
+            return True
+    else:
+        return True
+
+
+def createShare(path):
+    ''' create share from path '''
+    # TODO: create share
+    pass
+
+
+def syncShare(share_name):
+    ''' sync primary share to secondary shares '''
+    # TODO: sync share
+    pass
+
+
+def migrateShare(share_name, to_server):
+    ''' migrate share to server (sync, set primary) '''
+    # TODO: sync share
+    pass
 # arch: enable * start rpcbind.service + nfs-server.service
 # exportfs -rav
 # /nfs/test 10.0.0.1/24(rw,sync,subtree_check,no_root_squash)

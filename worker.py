@@ -107,18 +107,13 @@ def doCommand(cmd):
     global print_lock
     if cmd[0] == 'servers':
         with cloud_lock:
-            # print('cloud locked get servers')
             servers = json.dumps(cloud)
-        # print('cloud unlocked get servers')
         return servers
     if cmd[0] == 'handshake':
         ''' receive handshake '''
         data = ''.join(cmd[1:])
         s = json.loads(data)
-        # print('handshake from: ' + str(s['ip']))
         cloudAddServer(s)
-        # with print_lock:
-        #     print('handshake from :' + s['ip'])
         props = server.getServerProps()
         props = json.dumps(props)
         return props
@@ -144,6 +139,9 @@ def doCommand(cmd):
             return migrate(cmd['guest'], cmd['to_server'])
         elif cmd['action'] == 'migrateAll':
             return migrateAll(cmd['from_server'], cmd['to_server'])
+        elif cmd['action'] == 'mount':
+            # TODO: mount command
+            pass
         return 'invalid action: ' + str(cmd['action'])
 
 
