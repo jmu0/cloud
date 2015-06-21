@@ -106,7 +106,9 @@ def doCommand(cmd):
     global print_lock
     if cmd[0] == 'servers':
         with cloud_lock:
+            print('cloud locked get servers')
             servers = json.dumps(cloud)
+        print('cloud unlocked get servers')
         return servers
     if cmd[0] == 'handshake':
         ''' receive handshake '''
@@ -153,6 +155,7 @@ def threaded_scanner():
     while True:
         deleteIP = []
         with cloud_lock:
+            print('cloud locked')
             for s in range(len(cloud)):
                 if not cloud[s]['ip'] == localIp:
                     # handshake to remote server
@@ -170,6 +173,7 @@ def threaded_scanner():
                     if not cloud[s]:
                         del cloud[s]
                         break
+        print('cloud unlocked')
         # print('end threaded scan \n')
         time.sleep(pingTime)
 
@@ -184,6 +188,7 @@ def cloudHasServer(srv):
     global cloud_lock
     global print_lock
     with cloud_lock:
+        print('cloud locked hasServer')
         for s in cloud:
             try:
                 if s['ip'] == srv['ip']:
@@ -192,6 +197,7 @@ def cloudHasServer(srv):
                 with print_lock:
                     print(s)
                     print(srv)
+    print('cloud unlocked hasServer')
     return False
 
 
@@ -202,12 +208,16 @@ def cloudAddServer(srv):
     srv['lastPing'] = time.time()
     if not cloudHasServer(srv):  # add server to cloud
         with cloud_lock:
+            print('cloud locked add Server')
             cloud.append(srv)
+        print('cloud unlocked add Server')
     else:  # replace existing server
         with cloud_lock:
+            print('cloud locked update Server')
             for i in range(len(cloud)):
                 if cloud[i]['ip'] == srv['ip']:
                     cloud[i] = srv
+        print('cloud unlocked update Server')
 
 
 def getGuestList():
