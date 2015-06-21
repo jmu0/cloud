@@ -155,7 +155,7 @@ def threaded_scanner():
     while True:
         deleteIP = []
         with cloud_lock:
-            print('cloud locked')
+            print('cloud locked scanner')
             for s in range(len(cloud)):
                 if not cloud[s]['ip'] == localIp:
                     # handshake to remote server
@@ -173,7 +173,7 @@ def threaded_scanner():
                     if not cloud[s]:
                         del cloud[s]
                         break
-        print('cloud unlocked')
+        print('cloud unlocked scanner')
         # print('end threaded scan \n')
         time.sleep(pingTime)
 
