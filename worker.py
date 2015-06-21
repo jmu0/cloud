@@ -40,8 +40,8 @@ def run():
     t_scanner.start()
     while True:
         conn, addr = s.accept()
-        with print_lock:
-            print('connection from: ' + addr[0] + ":" + str(addr[1]))
+        # with print_lock:
+        # print('connection from: ' + addr[0] + ":" + str(addr[1]))
         # data = conn.recv(5120, socket.MSG_WAITALL)
         data = conn.recv(5120)
         data = data.decode()
@@ -107,15 +107,15 @@ def doCommand(cmd):
     global print_lock
     if cmd[0] == 'servers':
         with cloud_lock:
-            print('cloud locked get servers')
+            # print('cloud locked get servers')
             servers = json.dumps(cloud)
-        print('cloud unlocked get servers')
+        # print('cloud unlocked get servers')
         return servers
     if cmd[0] == 'handshake':
         ''' receive handshake '''
         data = ''.join(cmd[1:])
         s = json.loads(data)
-        print('handshake from: ' + str(s['ip']))
+        # print('handshake from: ' + str(s['ip']))
         cloudAddServer(s)
         # with print_lock:
         #     print('handshake from :' + s['ip'])
@@ -152,11 +152,11 @@ def getIPsToScan():
     ips = []
     t = time.time()
     with cloud_lock:
-        print('cloud locked get ips')
+        # print('cloud locked get ips')
         for s in cloud:
             if t - s['lastPing'] > pingTime:
                 ips.append(s['ip'])
-    print('cloud unlocked get ips')
+    # print('cloud unlocked get ips')
     return ips
 
 
@@ -188,7 +188,7 @@ def cloudHasServer(srv):
     global cloud_lock
     global print_lock
     with cloud_lock:
-        print('cloud locked hasServer')
+        # print('cloud locked hasServer')
         for s in cloud:
             try:
                 if s['ip'] == srv['ip']:
@@ -197,7 +197,7 @@ def cloudHasServer(srv):
                 with print_lock:
                     print(s)
                     print(srv)
-    print('cloud unlocked hasServer')
+    # print('cloud unlocked hasServer')
     return False
 
 
@@ -208,28 +208,28 @@ def cloudAddServer(srv):
     srv['lastPing'] = time.time()
     if not cloudHasServer(srv):  # add server to cloud
         with cloud_lock:
-            print('cloud locked add Server')
+            # print('cloud locked add Server')
             cloud.append(srv)
-        print('cloud unlocked add Server')
+        # print('cloud unlocked add Server')
     else:  # replace existing server
         with cloud_lock:
-            print('cloud locked update Server')
+            # print('cloud locked update Server')
             for i in range(len(cloud)):
                 if cloud[i]['ip'] == srv['ip']:
                     cloud[i] = srv
-        print('cloud unlocked update Server')
+        # print('cloud unlocked update Server')
 
 
 def cloudRemoveServer(ip):
     global cloud
     global cloud_lock
     with cloud_lock:
-        print('cloud locked remove server')
+        # print('cloud locked remove server')
         for s in range(len(cloud)):
             if cloud[s]['ip'] == ip:
                 del cloud[s]
                 break
-    print('cloud unlocked remove server')
+    # print('cloud unlocked remove server')
 
 
 def getGuestList():
