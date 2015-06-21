@@ -46,7 +46,7 @@ def scanCloud():
 
 def handshake(ip):
     ''' send handshake '''
-    # print('handshake to: ' + ip)
+    print('handshake to: ' + ip)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(2)
@@ -58,6 +58,7 @@ def handshake(ip):
         s.sendall(cmd)
         data = s.recv(5120)
         data = data.decode()
+        # print('handshake answer: ' + str(data))
         data = json.loads(data)
         data['lastPing'] = time.time()
         return data
@@ -88,7 +89,7 @@ def getFromSocket(command='', ip=None):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if not ip:
         ip = getFirstServer()
-    # print(ip)
+    print(ip)
 
     if (ip):
         s.connect((ip, getCloudPort()))

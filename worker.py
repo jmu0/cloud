@@ -74,8 +74,8 @@ def migrate(guest_name, to_server):
             t_migrate.start()
         else:
             # Send migrate job to guest's host
-            cmd =  'cmd {"action":"migrate","guest":"' + guest_name
-            cmd += '","to_server":"' + to_server + '"}' 
+            cmd = 'cmd {"action":"migrate","guest":"' + guest_name
+            cmd += '","to_server":"' + to_server + '"}'
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
             scanner.getFromSocket(command=cmd, ip=ip)
@@ -93,8 +93,8 @@ def migrateAll(from_server, to_server):
                 migrate(guest['name'], to_server)
     else:
         # Send migrate job to guest's host
-        cmd =  'cmd {"action":"migrateAll","from_server":"' + from_server
-        cmd += '","to_server":"' + to_server + '"}' 
+        cmd = 'cmd {"action":"migrateAll","from_server":"' + from_server
+        cmd += '","to_server":"' + to_server + '"}'
         ip = socket.gethostbyname(from_server)
         print('Sending migrateAll command to: ' + from_server)
         scanner.getFromSocket(command=cmd, ip=ip)
@@ -112,6 +112,7 @@ def doCommand(cmd):
         ''' receive handshake '''
         data = ''.join(cmd[1:])
         s = json.loads(data)
+        print('handshake from: ' + str(s['ip']))
         cloudAddServer(s)
         # with print_lock:
         #     print('handshake from :' + s['ip'])
@@ -160,7 +161,7 @@ def threaded_scanner():
                         cloud[s] = scanner.handshake(cloud[s]['ip'])
                         if not cloud[s]:
                             deleteIP.append(ip)
-                else: 
+                else:
                     # update localhost
                     if time.time() - cloud[s]['lastPing'] > pingTime:
                         cloud[s] = server.getServerProps()
