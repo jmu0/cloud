@@ -9,6 +9,7 @@ import time
 cloud = []
 cloud_lock = threading.Lock()
 print_lock = threading.Lock()
+pingTime = 5
 
 
 def run():
@@ -146,35 +147,34 @@ def doCommand(cmd):
         return 'invalid action: ' + str(cmd['action'])
 
 
+def getIPsToScan():
+    global cloud_lock
+    ips = []
+    t = time.time()
+    with cloud_lock:
+        print('cloud locked get ips')
+        for s in cloud:
+            if t - s['lastPing'] > pingTime:
+                ips.append(s['ip'])
+    print('cloud unlocked get ips')
+    return ips
+
+
 def threaded_scanner():
     '''thread to scan and update cloud'''
-    global cloud
-    global cloud_lock
-    pingTime = 5
     localIp = server.getServerIP(server.getHostName())
     while True:
-        deleteIP = []
-        with cloud_lock:
-            print('cloud locked scanner')
-            for s in range(len(cloud)):
-                if not cloud[s]['ip'] == localIp:
-                    # handshake to remote server
-                    if time.time() - cloud[s]['lastPing'] > pingTime:
-                        ip = cloud[s]['ip']
-                        cloud[s] = scanner.handshake(cloud[s]['ip'])
-                        if not cloud[s]:
-                            deleteIP.append(ip)
+        ips = getIPsToScan()
+        for ip in ips:
+            if not ip == localIp:  # handshake to remote server
+                srv = scanner.handshake(ip)
+                if srv:
+                    cloudAddServer(srv)
                 else:
-                    # update localhost
-                    if time.time() - cloud[s]['lastPing'] > pingTime:
-                        cloud[s] = server.getServerProps()
-            for ip in deleteIP:
-                for s in range(len(cloud)):
-                    if not cloud[s]:
-                        del cloud[s]
-                        break
-        print('cloud unlocked scanner')
-        # print('end threaded scan \n')
+                    cloudRemoveServer(ip)
+            else:  # update localhost
+                srv = server.getServerProps()
+                cloudAddServer(srv)
         time.sleep(pingTime)
 
 
@@ -218,6 +218,18 @@ def cloudAddServer(srv):
                 if cloud[i]['ip'] == srv['ip']:
                     cloud[i] = srv
         print('cloud unlocked update Server')
+
+
+def cloudRemoveServer(ip):
+    global cloud
+    global cloud_lock
+    with cloud_lock:
+        print('cloud locked remove server')
+        for s in range(len(cloud)):
+            if cloud[s]['ip'] == ip:
+                del cloud[s]
+                break
+    print('cloud unlocked remove server')
 
 
 def getGuestList():
