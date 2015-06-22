@@ -3,10 +3,18 @@ import nfs
 
 # shares = nfs.getShares()
 # print(shares)
-share = {
-    'name': 'plex',
+prim = {
+    'name': 'pxe',
     'network': '10.0.0.1/24',
-    'path': '/nfs/plex',
+    'path': '/nfs/pxe',
     'server': 'mediaserver'
 }
-print(nfs.mount(share))
+sec = {
+    'name': 'pxe',
+    'network': '10.0.0.1/24',
+    'path': '/nfs/pxe',
+    'server': 'cloud01'
+}
+print(prim)
+print(sec)
+print(nfs.syncShare(prim, sec))

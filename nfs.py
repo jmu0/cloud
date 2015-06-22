@@ -5,13 +5,14 @@ import subprocess
 
 
 def isNfsServer():
+    ''' is localhost nfs server'''
     return os.path.isfile('/etc/exports')
 
 
 def getShares():
-    f = open('/etc/exports', 'r')
-    exportsfile = f.readlines()
-    f.close()
+    ''' get local shares'''
+    with open('/etc/exports', 'r') as f:
+        exportsfile = f.readlines()
     exports = []
     for line in exportsfile:
         share = lineToShare(line)
@@ -21,8 +22,9 @@ def getShares():
 
 
 def getMounts():
+    ''' get nfs mounts on localhost '''
     mounts = []
-    f = os.popen('df -h -t nfs 2> /dev/null')
+    f = os.popen('df -h -t nfs -t nfs4 2> /dev/null')
     lines = f.read()
     lines = str(lines).splitlines()[1:]
     f.close()
@@ -50,6 +52,7 @@ def getMounts():
 
 
 def lineToShare(line):
+    ''' line in exportfs to share dict'''
     if not line.strip()[0] == '#':
         servername = socket.gethostname()
         line = line.split()
@@ -73,6 +76,7 @@ def lineToShare(line):
 
 
 def shareToLine(share):
+    ''' share dict to exports line '''
     line = share['path'] + ' '
     line += share['network'] + '('
     for o in share['options']:
@@ -97,6 +101,7 @@ def mount(share):
     mountpoint = '/mnt/'
     mountpoint += share['server'] + '/'
     mountpoint += share['name']
+    share['mountpoint'] = mountpoint
     # print(mountpoint)
     if not check_if_mounted(mountpoint):
         # print('not mounted')
@@ -118,26 +123,66 @@ def mount(share):
             print(str(sys.exc_info()[1]))
             return False
         else:
-            return True
+            return share
     else:
-        return True
+        return share
 
 
 def createShare(path):
     ''' create share from path on localhost'''
-    # TODO: create share
-    pass
+    # check if path exists
+    if not os.path.isdir(path):
+        print('path ' + path + ' does not exist')
+        return False
+    # check if already sahared
+    shares = getShares()
+    for s in shares:
+        if s['path'] == path:
+            print('path already shared: ' + path)
+            return False
+    # add line to /etc/exports
+    line = shareToLine({
+        'path': path,
+        'network': '10.0.0.1/24',
+        'options': ['rw', 'sync', 'subtree_check', 'no_root_squash']
+    })
+    with open('/etc/exports', 'a') as f:
+        f.write(line)
+    # update exports
+    res = subprocess.call(['exportfs', '-rav'])
+    if res == 0:
+        return True
+    else:
+        print('could not update exports')
+        return False
 
 
 def syncShare(primary_share, secondary_share):
     ''' sync primary share to secondary shares '''
-    # TODO: sync share
-    pass
+    # mount shares
+    primary_share = mount(primary_share)
+    secondary_share = mount(secondary_share)
+    if not primary_share:
+        print('could not mount primary share')
+        return False
+    if not secondary_share:
+        print('could not mount secondary share')
+        return False
+    prim_path = primary_share['mountpoint'] + '/'
+    sec_path = secondary_share['mountpoint']
+    cmd = ['rsync', '--archive', '--update', '--delete'
+           '--exclude=.cloud.json', prim_path, sec_path]
+    res = subprocess.call(cmd)
+    if res == 0:
+        return True
+    else:
+        return False
 
 
 def migrateShare(share_name, to_server):
     ''' migrate share to server (sync, set primary) '''
-    # TODO: sync share
+    # TODO: resources; .cloud.json file in share to store metadata
+    # TODO: migrate share
     pass
 # arch: enable * start rpcbind.service + nfs-server.service
 # exportfs -rav
