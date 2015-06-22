@@ -6,6 +6,7 @@
 # TODO: copy startup script
 
 # startup: /etc/init (ubuntu ...)
+#   update-rc.d cloud defaults
 
 # systemd: (arch ...)
 #   copy to /etc/systemd/system
