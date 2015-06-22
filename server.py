@@ -3,12 +3,27 @@ import socket
 import hypervisor
 import nfs
 
+
 def getServerIP(name):
     return socket.gethostbyname(name)
 
 
 def getHostName():
     return socket.gethostname()
+
+
+def getLoadAvg():
+    ''' read load average '''
+    l = {}
+    with open('/proc/loadavg') as f:
+        line = f.readline()
+    line = line.split()
+    l['1'] = line[0]
+    l['5'] = line[1]
+    l['15'] = line[2]
+    l['tasks'] = line[3]
+    l['lastProc'] = line[4]
+    return l
 
 
 def getServerProps():
@@ -34,4 +49,6 @@ def getServerProps():
         props['shares'] = []
     props['mounts'] = nfs.getMounts()
     props['lastPing'] = time.time()
+    props['loadavg'] = getLoadAvg()
+
     return props

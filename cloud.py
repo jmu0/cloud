@@ -5,6 +5,7 @@ import printer
 import sys
 import worker
 import os
+import time
 
 
 os.environ['PYTHONUNBUFFERED'] = 'True'  # for redirecting stdout to log file
@@ -14,7 +15,9 @@ if len(sys.argv) == 1:
     # TODO: write help.txt file
     print('helpstring')
 elif sys.argv[1] == 'sys':
+    start = time.time()
     print(server.getServerProps())
+    print(str(time.time() - start) + ' seconds')
 elif sys.argv[1] == 'run':
     worker.run()
 elif sys.argv[1] == 'scan':

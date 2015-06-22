@@ -73,8 +73,13 @@ def lineToShare(line):
 
 
 def shareToLine(share):
-    # TODO: create /etc/exports line from share
-    pass
+    line = share['path'] + ' '
+    line += share['network'] + '('
+    for o in share['options']:
+        line += o + ','
+    line = line[:-1]
+    line += ')'
+    return line
 
 
 def check_if_mounted(mountpoint):
@@ -119,12 +124,12 @@ def mount(share):
 
 
 def createShare(path):
-    ''' create share from path '''
+    ''' create share from path on localhost'''
     # TODO: create share
     pass
 
 
-def syncShare(share_name):
+def syncShare(primary_share, secondary_share):
     ''' sync primary share to secondary shares '''
     # TODO: sync share
     pass

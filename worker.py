@@ -112,8 +112,11 @@ def doCommand(cmd):
     if cmd[0] == 'handshake':
         ''' receive handshake '''
         data = ''.join(cmd[1:])
-        s = json.loads(data)
-        cloudAddServer(s)
+        try:
+            s = json.loads(data)
+            cloudAddServer(s)
+        except:
+            print('invalid json: ' + data)
         props = server.getServerProps()
         props = json.dumps(props)
         return props
