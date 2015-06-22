@@ -170,7 +170,7 @@ def syncShare(primary_share, secondary_share):
         return False
     prim_path = primary_share['mountpoint'] + '/'
     sec_path = secondary_share['mountpoint']
-    cmd = ['rsync', '--archive', '--update', '--delete'
+    cmd = ['rsync', '--archive', '--update', '--delete',
            '--exclude=.cloud.json', prim_path, sec_path]
     res = subprocess.call(cmd)
     if res == 0:
