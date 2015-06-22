@@ -43,7 +43,7 @@ def run():
         # with print_lock:
         # print('connection from: ' + addr[0] + ":" + str(addr[1]))
         # data = conn.recv(5120, socket.MSG_WAITALL)
-        data = conn.recv(5120)
+        data = conn.recv(10 * 1024)
         data = data.decode()
         # print('received command: ' + str(data))
         cmd = data.split()
