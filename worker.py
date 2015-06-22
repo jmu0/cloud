@@ -177,7 +177,7 @@ def threaded_scanner():
 
 
 def threaded_migrate(guest, to_server):
-    hypervisor.migrate(guest, to_server)
+    hypervisor.guest_migrate(guest, to_server)
 
 
 def cloudHasServer(srv):
