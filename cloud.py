@@ -31,9 +31,6 @@ elif sys.argv[1] == 'shares':
     printer.printShareList(scanner.getShares())
 elif sys.argv[1] == 'mounts':
     printer.printMountList(scanner.getMounts())
-elif sys.argv[1] == 'mount':
-    # TODO: mount command
-    pass
 elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
         ''' migrate guest to server'''
@@ -56,5 +53,16 @@ elif sys.argv[1] == 'migrate':
 elif sys.argv[1] == 'share':
     if len(sys.argv) == 3:
         print(nfs.createShare(sys.argv[2]))
+    else:
+        print('Invalid arguments.')
+elif sys.argv[1] == 'mount':
+    if len(sys.argv) == 3:
+        shares = scanner.getShares()
+        m_share = False
+        for share in shares:
+            s = share['server'] + ':' + share['path']
+            if s == sys.argv[2]:
+                m_share = share
+        print(nfs.mount(m_share))
     else:
         print('Invalid arguments.')
