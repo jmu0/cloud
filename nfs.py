@@ -130,6 +130,10 @@ def mount(share):
 
 def createShare(path):
     ''' create share from path on localhost'''
+    # check if localhost is nfs server
+    if not isNfsServer():
+        print('not a nfs server')
+        return False
     # check if path exists
     if not os.path.isdir(path):
         print('path ' + path + ' does not exist')

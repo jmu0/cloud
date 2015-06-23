@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import scanner
 import server
+import nfs
 import printer
 import sys
 import worker
@@ -50,5 +51,10 @@ elif sys.argv[1] == 'migrate':
         command += '","to_server":"' + to_server + '"}'
         resp = scanner.getFromSocket(command)
         print(resp)
+    else:
+        print('Invalid arguments.')
+elif sys.argv[1] == 'share':
+    if len(sys.argv) == 3:
+        print(nfs.createShare(sys.argv[2]))
     else:
         print('Invalid arguments.')
