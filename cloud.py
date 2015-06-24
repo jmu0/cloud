@@ -22,7 +22,8 @@ elif sys.argv[1] == 'sys':
 elif sys.argv[1] == 'run':
     worker.run()
 elif sys.argv[1] == 'scan':
-    print(scanner.scanCloud())
+    # TODO: get cloud from running instance
+    pass
 elif sys.argv[1] == 'servers':
     printer.printServerList(scanner.getServers())
 elif sys.argv[1] == 'guests':
