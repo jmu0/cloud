@@ -29,6 +29,7 @@ def getLoadAvg():
     l['15'] = line[2]
     l['tasks'] = line[3]
     l['lastProc'] = line[4]
+    l['loadLine'] = line[0] + ', ' + line[1] + ', ' + line[2]
     return l
 
 
@@ -56,7 +57,7 @@ def getServerProps():
     props['mounts'] = storage.getMounts()
     props['lastPing'] = time.time()
     props['loadavg'] = getLoadAvg()
-
+    props['load'] = props['loadavg']['loadLine']
     return props
 
 

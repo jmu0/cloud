@@ -42,11 +42,15 @@ def printListOfDictionaries(keys, lst):
     for s in lst:
         line = ''
         for key in sorted(keys.keys()):
-            if s[key]:
-                if type(s[key]) == 'list':
-                    field = str(len(s[key]))
-                else:
-                    field = str(s[key])
+            field = ''
+            try:
+                if s[key]:
+                    if type(s[key]) == 'list':
+                        field = str(len(s[key]))
+                    else:
+                        field = str(s[key])
+            except:
+                pass
             while len(field) < keys[key] + margin:
                 field += ' '
             line += field
@@ -59,10 +63,10 @@ def printServerList(lst):
         keys = {
             'name': 1,
             'ip': 1,
-            'mac': 1,
             'is_hypervisor': 13,
             'virsh_version': 13,
-            'is_nfs_server': 13
+            'is_nfs_server': 13,
+            'load': 16
         }
         printListOfDictionaries(keys, lst)
     else:

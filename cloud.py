@@ -72,7 +72,7 @@ elif sys.argv[1] == 'share':
         print('Invalid arguments.')
 elif sys.argv[1] == 'mount':
     if len(sys.argv) == 3:
-        shares = server.getShares()
+        shares = getShares()
         m_share = False
         for share in shares:
             s = share['server'] + ':' + share['path']
