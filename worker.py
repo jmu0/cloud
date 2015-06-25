@@ -11,6 +11,9 @@ print_lock = threading.Lock()
 pingTime = 5
 
 
+# TODO: resources, sync resources based on their settings in .cloud.json
+
+
 def run():
     '''run server, listen on port'''
     global cloud

@@ -83,3 +83,12 @@ elif sys.argv[1] == 'mount':
         print(storage.mount(m_share))
     else:
         print('Invalid arguments.')
+elif sys.argv[1] == 'move':
+    # TODO: move guest
+    pass
+elif sys.argv[1] == 'stop':
+    # TODO: stop guest
+    pass
+elif sys.argv[1] == 'destroy':
+    # TODO: destroy guest
+    pass
