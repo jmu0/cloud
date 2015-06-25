@@ -66,11 +66,13 @@ elif sys.argv[1] == 'migrate':
     else:
         print('Invalid arguments.')
 elif sys.argv[1] == 'share':
+    # TODO: move this to worker (see migrate)
     if len(sys.argv) == 3:
         print(storage.createShare(sys.argv[2]))
     else:
         print('Invalid arguments.')
 elif sys.argv[1] == 'mount':
+    # TODO: move this to worker (see migrate)
     if len(sys.argv) == 3:
         shares = getShares()
         m_share = False
