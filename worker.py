@@ -1,6 +1,5 @@
 import server
 import hypervisor
-import scanner
 import socket
 import json
 import threading
@@ -21,10 +20,10 @@ def run():
         localhost = server.getServerProps()
         localhost['lastPing'] = time.time()
         cloud.append(localhost)
-        cloud += scanner.scanCloud()
+        cloud += server.scanCloud()
 
     host = server.getHostName()
-    port = scanner.getCloudPort()
+    port = server.getCloudPort()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
@@ -79,7 +78,7 @@ def migrate(guest_name, to_server):
             cmd += '","to_server":"' + to_server + '"}'
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
-            scanner.getFromSocket(command=cmd, ip=ip)
+            server.getFromSocket(command=cmd, ip=ip)
     else:
         return 'Guest ' + guest_name + ' not found'
 
@@ -98,7 +97,7 @@ def migrateAll(from_server, to_server):
         cmd += '","to_server":"' + to_server + '"}'
         ip = socket.gethostbyname(from_server)
         print('Sending migrateAll command to: ' + from_server)
-        scanner.getFromSocket(command=cmd, ip=ip)
+        server.getFromSocket(command=cmd, ip=ip)
 
 
 def doCommand(cmd):
@@ -109,35 +108,37 @@ def doCommand(cmd):
         with cloud_lock:
             servers = json.dumps(cloud)
         return servers
-    if cmd[0] == 'handshake':
+    elif cmd[0] == 'handshake':
         ''' receive handshake '''
         data = ''.join(cmd[1:])
         try:
             s = json.loads(data)
             cloudAddServer(s)
         except:
-            print('invalid json: ' + data)
+            print('invalid json: ' + data + '\nlength: ' + str(len(data)))
         props = server.getServerProps()
         props = json.dumps(props)
         return props
-    if cmd[0] == 'guests':
+    elif cmd[0] == 'guests':
         guests = getGuestList()
         guests = json.dumps(guests)
         return guests
-    if cmd[0] == 'shares':
+    elif cmd[0] == 'shares':
         shares = getShareList()
         shares = json.dumps(shares)
         return shares
-    if cmd[0] == 'mounts':
+    elif cmd[0] == 'mounts':
         mounts = getMountList()
         mounts = json.dumps(mounts)
         return mounts
-    if cmd[0] == 'cmd':
+    elif cmd[0] == 'cmd':
         try:
             cmd = ''.join(cmd[1:])
             cmd = json.loads(cmd)
         except:
-            return 'invalid json: ' + str(cmd[1])
+            s = 'invalid json: '
+            s += str(cmd[1] + '\nlength: ' + str(len(cmd[1])))
+            return s
         if cmd['action'] == 'migrate':
             return migrate(cmd['guest'], cmd['to_server'])
         elif cmd['action'] == 'migrateAll':
@@ -168,7 +169,7 @@ def threaded_scanner():
         ips = getIPsToScan()
         for ip in ips:
             if not ip == localIp:  # handshake to remote server
-                srv = scanner.handshake(ip)
+                srv = server.handshake(ip)
                 if srv:
                     cloudAddServer(srv)
                 else:
