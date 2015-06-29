@@ -34,6 +34,11 @@ def printHeader(keys):
     print(underline)
 
 
+def printHelp():
+    with open('help.txt') as f:
+        print(f.read())
+
+
 def printListOfDictionaries(keys, lst):
     print()  # print empty line
     keys = getKeyLengths(keys, lst)
