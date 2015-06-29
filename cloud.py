@@ -28,8 +28,8 @@ def getMounts():
 
 
 if len(sys.argv) == 1:
-    # TODO: write help.txt file
-    print('helpstring')
+    with open('help.txt') as f:
+        print(f.read())
 elif sys.argv[1] == 'sys':
     start = time.time()
     print(server.getServerProps())

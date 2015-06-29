@@ -1,0 +1,13 @@
+cloud servers   :   prints a list of active servers
+cloud shares    :   prints a list of shares on active servers
+cloud mounts    :   prints a list of mounts on active servers 
+cloud guests    :   prints a list of guest vm's on active servers
+
+cloud migrate <guest> <server>
+    live migration of <guest> to <server>
+cloud migrate all <from_server> <to_server>
+    live migration of all guests from <from_server> to <to_server>
+cloud mount <share>
+    mounts share on localhost in /mnt/<server>/<share>
+cloud share <path>
+    shares <path> as nfs share on localhost
