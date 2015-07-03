@@ -39,6 +39,11 @@ elif sys.argv[1] == 'run':
     worker.run()
 elif sys.argv[1] == 'scan':
     print(server.scanCloud())
+elif sys.argv[1] == 'wake':
+    if len(sys.argv) == 3:
+        print(server.wake(sys.argv[2]))
+    else:
+        print('geen hostname')
 elif sys.argv[1] == 'servers':
     printer.printServerList(getServers())
 elif sys.argv[1] == 'guests':

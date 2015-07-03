@@ -4,6 +4,7 @@ import sys
 import socket
 import hypervisor
 import storage
+import subprocess
 
 
 def getCloudPort():
@@ -167,3 +168,24 @@ def getFromSocket(command='', ip=None):
             return False
     else:
         return False
+
+def getMac(hostname):
+    try:
+        with open(str(sys.path[0]) + '/mac.json') as f:
+            js = f.read()
+        macs = json.loads(js)
+        for key in macs.keys():
+            if key == hostname:
+                return macs[key]
+        return False
+    except:
+        print(str(sys.exc_info()[1]))
+        return False
+
+
+def wake(hostname):
+    mac = getMac(hostname)
+    print(mac)
+    if mac:
+        cmd = ['wol', mac]
+        return str(subprocess.check_output(cmd))
