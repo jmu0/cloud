@@ -10,6 +10,7 @@ def isNfsServer():
 
 
 def getShares():
+    # TODO: create resource class to associate with mounts and vm's
     ''' get local shares'''
     with open('/etc/exports', 'r') as f:
         exportsfile = f.readlines()

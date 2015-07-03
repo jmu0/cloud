@@ -26,6 +26,7 @@ def getVirshVersion():
 
 
 def getGuestList():
+    # TODO: get disk image location
     servername = socket.gethostname()
     with os.popen('virsh list 2> /dev/null') as f:
         txt = f.read()[0:-1]

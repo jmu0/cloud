@@ -60,6 +60,7 @@ def run():
 
 
 def migrate(guest_name, to_server):
+    # TODO: check if resource is mounted on <to_server>
     guests = getGuestList()
     localhost_name = server.getHostName()
     guest = False
@@ -75,13 +76,14 @@ def migrate(guest_name, to_server):
             t_migrate = threading.Thread(target=threaded_migrate, args=args)
             t_migrate.daemon = True
             t_migrate.start()
+            return 'migrate job started'
         else:
             # Send migrate job to guest's host
             cmd = 'cmd {"action":"migrate","guest":"' + guest_name
             cmd += '","to_server":"' + to_server + '"}'
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
-            server.getFromSocket(command=cmd, ip=ip)
+            return server.getFromSocket(command=cmd, ip=ip)
     else:
         return 'Guest ' + guest_name + ' not found'
 
