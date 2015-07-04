@@ -185,7 +185,14 @@ def getMac(hostname):
 
 def wake(hostname):
     mac = getMac(hostname)
-    print(mac)
     if mac:
-        cmd = ['wol', mac]
+        isWol = subprocess.call(['which', 'wol'])
+        isWakeOnLan = subprocess.call(['which', 'wakeonlan'])
+        if isWol == 0:
+            cmd = ['wol', mac]
+        elif isWakeOnLan == 0:
+            cmd = ['wakeonlan', mac]
+        else:
+            print('no wake-on-lan package installed')
+            return False
         return str(subprocess.check_output(cmd))
