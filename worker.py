@@ -4,6 +4,7 @@ import socket
 import json
 import threading
 import time
+import storage
 
 cloud = []
 cloud_lock = threading.Lock()
@@ -105,6 +106,29 @@ def migrateAll(from_server, to_server):
         server.getFromSocket(command=cmd, ip=ip)
 
 
+def mount(share_name, server_name):
+    ''' mount <shareName> on server <serverName>'''
+    print('mounting ' + share_name + ' on ' + server_name)
+    localhost_name = server.getHostName()
+    if server_name == localhost_name:
+        share = False
+        for s in getShareList():
+            if s['name'] == share_name:
+                share = s
+                break
+        if not share == False: 
+            return storage.mount(share)
+        else: 
+            return 'Share ' + share_name + ' not found' 
+    else:
+        # Send mount job to guest's host
+        cmd = 'cmd {"action":"mount","share_name":"' + share_name 
+        cmd += '","server_name":"' + server_name + '"}'
+        ip = socket.gethostbyname(server_name)
+        print('Sending mount command to: ' + server_name)
+        return server.getFromSocket(command=cmd, ip=ip)
+
+
 def doCommand(cmd):
     '''do command received from socket connection'''
     global cloud_lock
@@ -149,7 +173,7 @@ def doCommand(cmd):
         elif cmd['action'] == 'migrateAll':
             return migrateAll(cmd['from_server'], cmd['to_server'])
         elif cmd['action'] == 'mount':
-            # TODO: mount command
+            return mount(cmd['shareName'], cmd['serverName'])
             pass
         return 'invalid action: ' + str(cmd['action'])
 
