@@ -149,7 +149,7 @@ def getFromSocket(command='', ip=None):
         cmd = command
         cmd = cmd.encode()
         s.sendall(cmd)
-        data = s.recv(10 * 1024, socket.MSG_WAITALL)
+        data = s.recv(20 * 1024, socket.MSG_WAITALL)
         # data = b''
         # while True:
         #     buf = s.recv(1024)
