@@ -83,7 +83,8 @@ def printGuestList(lst):
         keys = {
             'name': 1,
             'state': 1,
-            'host': 1
+            'host': 1,
+            'image_path': 30
         }
         printListOfDictionaries(keys, lst)
     else:

@@ -39,7 +39,8 @@ def getGuestList():
                 "id": l[0],
                 "name": l[1],
                 "state": l[2],
-                "host": servername
+                "host": servername,
+                "image_path": get_guest_image_path(l[1])
             }
             list.append(item)
     return list
@@ -49,7 +50,7 @@ def get_guest_image_path(guest_name):
     cmd = 'virsh domblklist ' + guest_name + ' 2> /dev/null'
     with os.popen(cmd) as f:
         txt = f.read()
-    print(txt)
+    txt = txt.split()[4]
     return txt
 
 
