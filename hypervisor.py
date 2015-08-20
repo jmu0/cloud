@@ -45,6 +45,14 @@ def getGuestList():
     return list
 
 
+def get_guest_image_path(guest_name):
+    cmd = 'virsh domblklist ' + guest_name + ' 2> /dev/null'
+    with os.popen(cmd) as f:
+        txt = f.read()
+    print(txt)
+    return txt
+
+
 def guest_migrate(guest_name, to_server_name):
     ''' migrate guest to server '''
     cmd = "virsh migrate --live --unsafe " + guest_name
