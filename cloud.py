@@ -92,7 +92,7 @@ elif sys.argv[1] == 'mount':
 elif sys.argv[1] == 'move':
     # TODO: move guest
     pass
-elif sys.argv[1] == 'stop':
+elif sys.argv[1] == 'shutdown':
     # TODO: stop guest
     pass
 elif sys.argv[1] == 'destroy':

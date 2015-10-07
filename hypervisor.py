@@ -1,10 +1,12 @@
 import os
 import socket
+import time
 
 # TODO: balance load between hypervisors??
 
 
 def isHypervisor():
+    ''' check if virsh is installed on local server '''
     with os.popen('which virsh') as f:
         version = f.read()[0:-1]
     if len(version) > 0:
@@ -14,6 +16,7 @@ def isHypervisor():
 
 
 def getVirshVersion():
+    ''' get local virsh version '''
     if (isHypervisor()):
         with os.popen('virsh --version') as f:
             version = f.read()[0:-1]
@@ -26,6 +29,7 @@ def getVirshVersion():
 
 
 def getGuestList():
+    ''' get list of dictionaries containing local guests '''
     # TODO: get disk image location
     servername = socket.gethostname()
     with os.popen('virsh list 2> /dev/null') as f:
@@ -46,7 +50,16 @@ def getGuestList():
     return list
 
 
+def has_guest(guest_name):
+    ''' check if guest is running on local server '''
+    for g in getGuestList():
+        if g['name'] == guest_name:
+            return True
+    return False
+
+
 def get_guest_image_path(guest_name):
+    ''' get image path for local guest '''
     cmd = 'virsh domblklist ' + guest_name + ' 2> /dev/null'
     with os.popen(cmd) as f:
         txt = f.read()
@@ -68,16 +81,49 @@ def guest_migrate(guest_name, to_server_name):
     return txt
 
 
-def guest_create(guest_name, on_server_name):
-    ''' create guest on server '''
-    pass
+def guest_create(guest_image_path):
+    ''' create guest on local server '''
+    cmd = "virsh create " + guest_image_path
+    print("guest create command: " + str(cmd))
+    with os.popen(cmd) as f:
+        txt = f.read()[0:-1]
+    txt = str(txt)
+    if txt == '':
+        txt = 'OK'
+    print("guest create response: " + txt)
+    return txt
 
 
 def guest_shutdown(guest_name):
-    ''' shutdown guest '''
-    pass
+    ''' shutdown guest on local server '''
+    interval = 0.5   # interval to check if guest is alive in ms
+    tests = 10  # number of times to test, then destroy guest
+    cmd = "virsh shutdown " + guest_name
+    print("guest shutdown command: " + str(cmd))
+    with os.popen(cmd) as f:
+        txt = f.read()[0:-1]
+    txt = str(txt)
+    if txt == '':
+        txt = 'OK'
+    print("guest shutdown response: " + txt)
+    for i in range(tests):
+        if not has_guest(guest_name):
+            # TODO: does not break loop??
+            print('guest ' + guest_name + ' has shut down.')
+            return txt
+            break
+        time.sleep(interval)
+    return guest_destroy(guest_name)
 
 
 def guest_destroy(guest_name):
-    ''' destroy guest '''
-    pass
+    ''' destroy guest on local server '''
+    cmd = "virsh destroy " + guest_name
+    print("guest destroy command: " + str(cmd))
+    with os.popen(cmd) as f:
+        txt = f.read()[0:-1]
+    txt = str(txt)
+    if txt == '':
+        txt = 'OK'
+    print("guest destroy response: " + txt)
+    return txt
