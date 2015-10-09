@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import server
-import storage
+# import storage
 import printer
 import sys
 import worker
@@ -79,15 +79,23 @@ elif sys.argv[1] == 'share':
         print(resp)
     else:
         print('Invalid arguments.')
-    # TODO: move this to worker (see migrate)
-    '''
+elif sys.argv[1] == 'mount':
     if len(sys.argv) == 3:
-        print(storage.create_share(sys.argv[2]))
+        s = sys.argv[2].split('@')
+        if len(s) == 2:
+            server_name = s[2]
+            share_name = s[1]
+        else:
+            server_name = server.get_hostname()
+            share_name = sys.argv[2]
+        command = 'cmd {"action":"mount","share_name":"' + share_name + '"'
+        command += ',"server_name":"' + server_name + '"}'
+        resp = server.get_from_socket(command)
+        print(resp)
     else:
         print('Invalid arguments.')
-    '''
-elif sys.argv[1] == 'mount':
     # TODO: move this to worker (see migrate)
+    '''
     if len(sys.argv) == 3:
         shares = get_shares()
         m_share = False
@@ -98,6 +106,7 @@ elif sys.argv[1] == 'mount':
         print(storage.mount(m_share))
     else:
         print('Invalid arguments.')
+    '''
 elif sys.argv[1] == 'move':
     # TODO: move guest
     pass

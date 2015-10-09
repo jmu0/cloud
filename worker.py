@@ -131,7 +131,7 @@ def mount(share_name, server_name):
     if server_name == localhost_name:
         share = False
         for s in get_share_list():
-            if s['name'] == share_name:
+            if s['server'] + ':' + s['path'] == share_name:
                 share = s
                 break
         if share is not False:
@@ -191,7 +191,7 @@ def do_command(cmd):
         elif cmd['action'] == 'migrateAll':
             return migrate_all(cmd['from_server'], cmd['to_server'])
         elif cmd['action'] == 'mount':
-            return mount(cmd['shareName'], cmd['serverName'])
+            return mount(cmd['share_name'], cmd['server_name'])
         elif cmd['action'] == 'create_share':
             return create_share(cmd['path'])
         return 'invalid action: ' + str(cmd['action'])
