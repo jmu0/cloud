@@ -11,47 +11,47 @@ import time
 os.environ['PYTHONUNBUFFERED'] = 'True'  # for redirecting stdout to log file
 
 
-def getServers():
-    return server.getFromSocket('servers')
+def get_servers():
+    return server.get_from_socket('servers')
 
 
-def getGuests():
-    return server.getFromSocket('guests')
+def get_guests():
+    return server.get_from_socket('guests')
 
 
-def getShares():
-    return server.getFromSocket('shares')
+def get_shares():
+    return server.get_from_socket('shares')
 
 
-def getMounts():
-    return server.getFromSocket('mounts')
+def get_mounts():
+    return server.get_from_socket('mounts')
 
 
 if len(sys.argv) == 1:
-    printer.printHelp()
+    printer.print_help()
 elif sys.argv[1] == 'help':
-    printer.printHelp()
+    printer.print_help()
 elif sys.argv[1] == 'sys':
     start = time.time()
-    print(server.getServerProps())
+    print(server.get_server_props())
     print(str(time.time() - start) + ' seconds')
 elif sys.argv[1] == 'run':
     worker.run()
 elif sys.argv[1] == 'scan':
-    print(server.scanCloud())
+    print(server.scan_cloud())
 elif sys.argv[1] == 'wake':
     if len(sys.argv) == 3:
         print(server.wake(sys.argv[2]))
     else:
         print('geen hostname')
 elif sys.argv[1] == 'servers':
-    printer.printServerList(getServers())
+    printer.print_server_list(get_servers())
 elif sys.argv[1] == 'guests':
-    printer.printGuestList(getGuests())
+    printer.print_guest_list(get_guests())
 elif sys.argv[1] == 'shares':
-    printer.printShareList(getShares())
+    printer.print_share_list(get_shares())
 elif sys.argv[1] == 'mounts':
-    printer.printMountList(getMounts())
+    printer.print_mount_list(get_mounts())
 elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
         ''' migrate guest to server'''
@@ -59,7 +59,7 @@ elif sys.argv[1] == 'migrate':
         to_server = sys.argv[3]
         command = 'cmd {"action":"migrate","guest":"' + guest
         command += '","to_server":"' + to_server + '"}'
-        resp = server.getFromSocket(command)
+        resp = server.get_from_socket(command)
         print(resp)
     elif len(sys.argv) == 5 and sys.argv[2] == 'all':
         ''' migrate all '''
@@ -67,7 +67,7 @@ elif sys.argv[1] == 'migrate':
         to_server = sys.argv[4]
         command = 'cmd {"action":"migrateAll","from_server":"' + from_server
         command += '","to_server":"' + to_server + '"}'
-        resp = server.getFromSocket(command)
+        resp = server.get_from_socket(command)
         print(resp)
     else:
         print('Invalid arguments.')
@@ -80,7 +80,7 @@ elif sys.argv[1] == 'share':
 elif sys.argv[1] == 'mount':
     # TODO: move this to worker (see migrate)
     if len(sys.argv) == 3:
-        shares = getShares()
+        shares = get_shares()
         m_share = False
         for share in shares:
             s = share['server'] + ':' + share['path']

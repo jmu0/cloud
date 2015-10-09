@@ -7,19 +7,19 @@ import storage
 import subprocess
 
 
-def getCloudPort():
+def get_cloud_port():
     return 7777
 
 
-def getServerIP(name):
+def get_server_ip(name):
     return socket.gethostbyname(name)
 
 
-def getHostName():
+def get_hostname():
     return socket.gethostname()
 
 
-def getLoadAvg():
+def get_load_avg():
     ''' read load average '''
     l = {}
     with open('/proc/loadavg') as f:
@@ -34,17 +34,17 @@ def getLoadAvg():
     return l
 
 
-def getServerProps():
+def get_server_props():
     '''get properties of localhost'''
-    # TODO: get system load /memory stats
+    # TODO: get memory stats
     props = {}
-    props['name'] = getHostName()
-    props['ip'] = getServerIP(props['name'])
+    props['name'] = get_hostname()
+    props['ip'] = get_server_ip(props['name'])
     props['mac'] = 'mac address'
-    if hypervisor.isHypervisor():
+    if hypervisor.is_hypervisor():
         props['is_hypervisor'] = 'True'
-        props['virsh_version'] = hypervisor.getVirshVersion()
-        props['guests'] = hypervisor.getGuestList()
+        props['virsh_version'] = hypervisor.get_virsh_version()
+        props['guests'] = hypervisor.get_guest_list()
     else:
         props['is_hypervisor'] = 'False'
         props['virsh_version'] = 'not installed'
@@ -57,7 +57,7 @@ def getServerProps():
         props['shares'] = []
     props['mounts'] = storage.get_mounts()
     props['lastPing'] = time.time()
-    props['loadavg'] = getLoadAvg()
+    props['loadavg'] = get_load_avg()
     props['load'] = props['loadavg']['loadLine']
     return props
 
@@ -75,7 +75,7 @@ def portscan(ip, port):
         return False
 
 
-def scanNetwork(port):
+def scan_network(port):
     found = []
     localip = socket.gethostbyname(socket.gethostname())
     for x in range(0, 256):
@@ -86,8 +86,8 @@ def scanNetwork(port):
     return found
 
 
-def scanCloud():
-    ips = scanNetwork(getCloudPort())
+def scan_cloud():
+    ips = scan_network(get_cloud_port())
     cloud = []
     # print(ips)
     for ip in ips:
@@ -103,9 +103,9 @@ def handshake(ip):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(2)
-        s.connect((ip, getCloudPort()))
+        s.connect((ip, get_cloud_port()))
         s.settimeout(None)
-        cmd = 'handshake ' + json.dumps(getServerProps())
+        cmd = 'handshake ' + json.dumps(get_server_props())
         # cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
@@ -121,11 +121,11 @@ def handshake(ip):
         return False
 
 
-def getFirstServer():
+def get_first_server():
     '''return ip of first cloud server found'''
     # try localhost
-    localip = getServerIP(getHostName())
-    port = getCloudPort()
+    localip = get_server_ip(get_hostname())
+    port = get_cloud_port()
     if portscan(localip, port):
         return localip
     # scan network, return first found server
@@ -137,15 +137,15 @@ def getFirstServer():
     return False
 
 
-def getFromSocket(command='', ip=None):
+def get_from_socket(command='', ip=None):
     '''get data from running cloud instance'''
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if not ip:
-        ip = getFirstServer()
+        ip = get_first_server()
     # print(ip)
 
     if (ip):
-        s.connect((ip, getCloudPort()))
+        s.connect((ip, get_cloud_port()))
         cmd = command
         cmd = cmd.encode()
         s.sendall(cmd)
@@ -169,7 +169,8 @@ def getFromSocket(command='', ip=None):
     else:
         return False
 
-def getMac(hostname):
+
+def get_mac_address(hostname):
     try:
         with open(str(sys.path[0]) + '/mac.json') as f:
             js = f.read()
@@ -184,7 +185,7 @@ def getMac(hostname):
 
 
 def wake(hostname):
-    mac = getMac(hostname)
+    mac = get_mac_address(hostname)
     if mac:
         isWol = subprocess.call(['which', 'wol'])
         isWakeOnLan = subprocess.call(['which', 'wakeonlan'])

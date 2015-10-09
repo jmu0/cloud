@@ -3,7 +3,7 @@ import socket
 import time
 
 
-def isHypervisor():
+def is_hypervisor():
     ''' check if virsh is installed on local server '''
     with os.popen('which virsh') as f:
         version = f.read()[0:-1]
@@ -13,9 +13,9 @@ def isHypervisor():
         return False
 
 
-def getVirshVersion():
+def get_virsh_version():
     ''' get local virsh version '''
-    if (isHypervisor()):
+    if (is_hypervisor()):
         with os.popen('virsh --version') as f:
             version = f.read()[0:-1]
         if len(version) > 0:
@@ -26,7 +26,7 @@ def getVirshVersion():
         return 'not installed'
 
 
-def getGuestList():
+def get_guest_list():
     ''' get list of dictionaries containing local guests '''
     # TODO: get disk image location
     servername = socket.gethostname()
@@ -50,7 +50,7 @@ def getGuestList():
 
 def has_guest(guest_name):
     ''' check if guest is running on local server '''
-    for g in getGuestList():
+    for g in get_guest_list():
         if g['name'] == guest_name:
             return True
     return False

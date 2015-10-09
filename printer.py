@@ -1,7 +1,7 @@
 margin = 2
 
 
-def getKeyLengths(keys, lst):
+def get_key_lengths(keys, lst):
     for item in lst:
         for key in item:
             if type(item[key]) == 'list':
@@ -15,7 +15,7 @@ def getKeyLengths(keys, lst):
     return keys
 
 
-def printHeader(keys):
+def print_header(keys):
     line = ''
     underline = ''
     # print header
@@ -34,15 +34,15 @@ def printHeader(keys):
     print(underline)
 
 
-def printHelp():
+def print_help():
     with open('help.txt') as f:
         print(f.read())
 
 
-def printListOfDictionaries(keys, lst):
+def print_list_of_dictionaries(keys, lst):
     print()  # print empty line
-    keys = getKeyLengths(keys, lst)
-    printHeader(keys)
+    keys = get_key_lengths(keys, lst)
+    print_header(keys)
     # print table
     for s in lst:
         line = ''
@@ -63,7 +63,7 @@ def printListOfDictionaries(keys, lst):
     print()  # print empty line
 
 
-def printServerList(lst):
+def print_server_list(lst):
     if (lst):
         keys = {
             'name': 1,
@@ -73,12 +73,12 @@ def printServerList(lst):
             'is_nfs_server': 13,
             'load': 16
         }
-        printListOfDictionaries(keys, lst)
+        print_list_of_dictionaries(keys, lst)
     else:
         print('no list')
 
 
-def printGuestList(lst):
+def print_guest_list(lst):
     if (lst):
         keys = {
             'name': 1,
@@ -86,12 +86,12 @@ def printGuestList(lst):
             'host': 1,
             'image_path': 30
         }
-        printListOfDictionaries(keys, lst)
+        print_list_of_dictionaries(keys, lst)
     else:
         print('no list')
 
 
-def printShareList(lst):
+def print_share_list(lst):
     if (lst):
         keys = {
             'name': 1,
@@ -99,12 +99,12 @@ def printShareList(lst):
             'network': 1,
             'server': 1
         }
-        printListOfDictionaries(keys, lst)
+        print_list_of_dictionaries(keys, lst)
     else:
         print('no list')
 
 
-def printMountList(lst):
+def print_mount_list(lst):
     if (lst):
         keys = {
             'mount': 5,
@@ -118,6 +118,6 @@ def printMountList(lst):
             'usedPerc': 8,
             'mountpoint': 10
         }
-        printListOfDictionaries(keys, lst)
+        print_list_of_dictionaries(keys, lst)
     else:
         print('no list')

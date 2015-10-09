@@ -21,13 +21,13 @@ def run():
     global cloud_lock
     global print_lock
     with cloud_lock:
-        localhost = server.getServerProps()
+        localhost = server.get_server_props()
         localhost['lastPing'] = time.time()
         cloud.append(localhost)
-        cloud += server.scanCloud()
+        cloud += server.scan_cloud()
 
-    host = server.getHostName()
-    port = server.getCloudPort()
+    host = server.get_hostname()
+    port = server.get_cloud_port()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
@@ -63,7 +63,7 @@ def run():
 def migrate(guest_name, to_server):
     # TODO: check if resource is mounted on <to_server>
     guests = get_guest_list()
-    localhost_name = server.getHostName()
+    localhost_name = server.get_hostname()
     guest = False
     for g in guests:
         if g['name'] == guest_name:
@@ -84,14 +84,14 @@ def migrate(guest_name, to_server):
             cmd += '","to_server":"' + to_server + '"}'
             ip = socket.gethostbyname(guest['host'])
             print('Sending migrate command to: ' + guest['host'])
-            return server.getFromSocket(command=cmd, ip=ip)
+            return server.get_from_socket(command=cmd, ip=ip)
     else:
         return 'Guest ' + guest_name + ' not found'
 
 
 def migrate_all(from_server, to_server):
     ''' migrate all guests from one host to another '''
-    localhost_name = server.getHostName()
+    localhost_name = server.get_hostname()
     if from_server == localhost_name:
         guests = get_guest_list()
         for guest in guests:
@@ -103,13 +103,13 @@ def migrate_all(from_server, to_server):
         cmd += '","to_server":"' + to_server + '"}'
         ip = socket.gethostbyname(from_server)
         print('Sending migrateAll command to: ' + from_server)
-        server.getFromSocket(command=cmd, ip=ip)
+        server.get_from_socket(command=cmd, ip=ip)
 
 
 def mount(share_name, server_name):
     ''' mount <shareName> on server <serverName>'''
     print('mounting ' + share_name + ' on ' + server_name)
-    localhost_name = server.getHostName()
+    localhost_name = server.get_hostname()
     if server_name == localhost_name:
         share = False
         for s in get_share_list():
@@ -126,7 +126,7 @@ def mount(share_name, server_name):
         cmd += '","server_name":"' + server_name + '"}'
         ip = socket.gethostbyname(server_name)
         print('Sending mount command to: ' + server_name)
-        return server.getFromSocket(command=cmd, ip=ip)
+        return server.get_from_socket(command=cmd, ip=ip)
 
 
 def do_command(cmd):
@@ -145,7 +145,7 @@ def do_command(cmd):
             cloud_add_server(s)
         except:
             print('invalid json: ' + data + '\nlength: ' + str(len(data)))
-        props = server.getServerProps()
+        props = server.get_server_props()
         props = json.dumps(props)
         return props
     elif cmd[0] == 'guests':
@@ -193,7 +193,7 @@ def get_ips_to_scan():
 
 def threaded_scanner():
     '''thread to scan and update cloud'''
-    localIp = server.getServerIP(server.getHostName())
+    localIp = server.get_server_ip(server.get_hostname())
     while True:
         ips = get_ips_to_scan()
         for ip in ips:
@@ -204,7 +204,7 @@ def threaded_scanner():
                 else:
                     cloud_remove_server(ip)
             else:  # update localhost
-                srv = server.getServerProps()
+                srv = server.get_server_props()
                 cloud_add_server(srv)
         time.sleep(pingTime)
 
