@@ -49,13 +49,13 @@ def getServerProps():
         props['is_hypervisor'] = 'False'
         props['virsh_version'] = 'not installed'
         props['guests'] = []
-    if storage.isNfsServer():
+    if storage.is_nfs_server():
         props['is_nfs_server'] = 'True'
-        props['shares'] = storage.getShares()
+        props['shares'] = storage.get_shares()
     else:
         props['is_nfs_server'] = 'False'
         props['shares'] = []
-    props['mounts'] = storage.getMounts()
+    props['mounts'] = storage.get_mounts()
     props['lastPing'] = time.time()
     props['loadavg'] = getLoadAvg()
     props['load'] = props['loadavg']['loadLine']

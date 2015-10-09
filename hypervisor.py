@@ -2,8 +2,6 @@ import os
 import socket
 import time
 
-# TODO: balance load between hypervisors??
-
 
 def isHypervisor():
     ''' check if virsh is installed on local server '''
