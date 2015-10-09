@@ -193,7 +193,7 @@ def do_command(cmd):
         elif cmd['action'] == 'mount':
             return mount(cmd['shareName'], cmd['serverName'])
         elif cmd['action'] == 'create_share':
-            pass
+            return create_share(cmd['path'])
         return 'invalid action: ' + str(cmd['action'])
 
 
