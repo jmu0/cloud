@@ -83,7 +83,7 @@ def share_to_line(share):
     for o in share['options']:
         line += o + ','
     line = line[:-1]
-    line += ')'
+    line += ')\n'
     return line
 
 

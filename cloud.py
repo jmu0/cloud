@@ -72,11 +72,20 @@ elif sys.argv[1] == 'migrate':
     else:
         print('Invalid arguments.')
 elif sys.argv[1] == 'share':
+    if len(sys.argv) == 3:
+        path = sys.argv[2]
+        command = 'cmd {"action":"create_share","path":"' + path + '"}'
+        resp = server.get_from_socket(command)
+        print(resp)
+    else:
+        print('Invalid arguments.')
     # TODO: move this to worker (see migrate)
+    '''
     if len(sys.argv) == 3:
         print(storage.create_share(sys.argv[2]))
     else:
         print('Invalid arguments.')
+    '''
 elif sys.argv[1] == 'mount':
     # TODO: move this to worker (see migrate)
     if len(sys.argv) == 3:

@@ -106,6 +106,24 @@ def migrate_all(from_server, to_server):
         server.get_from_socket(command=cmd, ip=ip)
 
 
+def create_share(path):
+    ''' create share on server'''
+    localhost_name = server.get_hostname()
+    server_name = localhost_name
+    p = path.split(':')
+    if p.length == 2:
+        server_name = p[0]
+        path = p[1]
+    if server_name == localhost_name:
+        # create share on local server
+        return storage.create_share(path)
+    else:
+        # send create share to server <server_name>
+        cmd = 'cmd {"action":"create_share","path":"' + path + '"}'
+        ip = socket.gethostbyname(server_name)
+        resp = server.get_from_socket(command=cmd, ip=ip)
+
+
 def mount(share_name, server_name):
     ''' mount <shareName> on server <serverName>'''
     print('mounting ' + share_name + ' on ' + server_name)
@@ -116,7 +134,7 @@ def mount(share_name, server_name):
             if s['name'] == share_name:
                 share = s
                 break
-        if not share == False:
+        if share is not False:
             return storage.mount(share)
         else:
             return 'Share ' + share_name + ' not found'
@@ -174,6 +192,7 @@ def do_command(cmd):
             return migrate_all(cmd['from_server'], cmd['to_server'])
         elif cmd['action'] == 'mount':
             return mount(cmd['shareName'], cmd['serverName'])
+        elif cmd['action'] == 'create_share':
             pass
         return 'invalid action: ' + str(cmd['action'])
 
