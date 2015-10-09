@@ -96,14 +96,14 @@ def migrate_all(from_server, to_server):
         guests = get_guest_list()
         for guest in guests:
             if guest['host'] == localhost_name:
-                migrate(guest['name'], to_server)
+                return migrate(guest['name'], to_server)
     else:
         # Send migrate job to guest's host
         cmd = 'cmd {"action":"migrateAll","from_server":"' + from_server
         cmd += '","to_server":"' + to_server + '"}'
         ip = socket.gethostbyname(from_server)
         print('Sending migrateAll command to: ' + from_server)
-        server.get_from_socket(command=cmd, ip=ip)
+        return server.get_from_socket(command=cmd, ip=ip)
 
 
 def create_share(path):
@@ -111,7 +111,7 @@ def create_share(path):
     localhost_name = server.get_hostname()
     server_name = localhost_name
     p = path.split(':')
-    if p.length == 2:
+    if len(p) == 2:
         server_name = p[0]
         path = p[1]
     if server_name == localhost_name:
@@ -121,7 +121,7 @@ def create_share(path):
         # send create share to server <server_name>
         cmd = 'cmd {"action":"create_share","path":"' + path + '"}'
         ip = socket.gethostbyname(server_name)
-        resp = server.get_from_socket(command=cmd, ip=ip)
+        return server.get_from_socket(command=cmd, ip=ip)
 
 
 def mount(share_name, server_name):
