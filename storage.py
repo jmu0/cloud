@@ -139,6 +139,10 @@ def create_share(path):
     if not os.path.isdir(path):
         print('path ' + path + ' does not exist')
         return False
+    # check if .cloud.json exists
+    if not os.path.isfile(path + '/.cloud.json'):
+        print(path + ' not sharable (no .cloud.json file)')
+        return False
     # check if already sahared
     shares = get_shares()
     for s in shares:
