@@ -51,7 +51,7 @@ def run():
         # print('received command: ' + str(data))
         cmd = data.split()
         if (cmd):
-            result = doCommand(cmd)
+            result = do_command(cmd)
             # print('-----result-----')
             # print(result)
             # print('-----end result-----')
@@ -62,7 +62,7 @@ def run():
 
 def migrate(guest_name, to_server):
     # TODO: check if resource is mounted on <to_server>
-    guests = getGuestList()
+    guests = get_guest_list()
     localhost_name = server.getHostName()
     guest = False
     for g in guests:
@@ -89,11 +89,11 @@ def migrate(guest_name, to_server):
         return 'Guest ' + guest_name + ' not found'
 
 
-def migrateAll(from_server, to_server):
+def migrate_all(from_server, to_server):
     ''' migrate all guests from one host to another '''
     localhost_name = server.getHostName()
     if from_server == localhost_name:
-        guests = getGuestList()
+        guests = get_guest_list()
         for guest in guests:
             if guest['host'] == localhost_name:
                 migrate(guest['name'], to_server)
@@ -112,7 +112,7 @@ def mount(share_name, server_name):
     localhost_name = server.getHostName()
     if server_name == localhost_name:
         share = False
-        for s in getShareList():
+        for s in get_share_list():
             if s['name'] == share_name:
                 share = s
                 break
@@ -129,7 +129,7 @@ def mount(share_name, server_name):
         return server.getFromSocket(command=cmd, ip=ip)
 
 
-def doCommand(cmd):
+def do_command(cmd):
     '''do command received from socket connection'''
     global cloud_lock
     global print_lock
@@ -142,22 +142,22 @@ def doCommand(cmd):
         data = ''.join(cmd[1:])
         try:
             s = json.loads(data)
-            cloudAddServer(s)
+            cloud_add_server(s)
         except:
             print('invalid json: ' + data + '\nlength: ' + str(len(data)))
         props = server.getServerProps()
         props = json.dumps(props)
         return props
     elif cmd[0] == 'guests':
-        guests = getGuestList()
+        guests = get_guest_list()
         guests = json.dumps(guests)
         return guests
     elif cmd[0] == 'shares':
-        shares = getShareList()
+        shares = get_share_list()
         shares = json.dumps(shares)
         return shares
     elif cmd[0] == 'mounts':
-        mounts = getMountList()
+        mounts = get_mount_list()
         mounts = json.dumps(mounts)
         return mounts
     elif cmd[0] == 'cmd':
@@ -171,14 +171,14 @@ def doCommand(cmd):
         if cmd['action'] == 'migrate':
             return migrate(cmd['guest'], cmd['to_server'])
         elif cmd['action'] == 'migrateAll':
-            return migrateAll(cmd['from_server'], cmd['to_server'])
+            return migrate_all(cmd['from_server'], cmd['to_server'])
         elif cmd['action'] == 'mount':
             return mount(cmd['shareName'], cmd['serverName'])
             pass
         return 'invalid action: ' + str(cmd['action'])
 
 
-def getIPsToScan():
+def get_ips_to_scan():
     global cloud_lock
     ips = []
     t = time.time()
@@ -195,17 +195,17 @@ def threaded_scanner():
     '''thread to scan and update cloud'''
     localIp = server.getServerIP(server.getHostName())
     while True:
-        ips = getIPsToScan()
+        ips = get_ips_to_scan()
         for ip in ips:
             if not ip == localIp:  # handshake to remote server
                 srv = server.handshake(ip)
                 if srv:
-                    cloudAddServer(srv)
+                    cloud_add_server(srv)
                 else:
-                    cloudRemoveServer(ip)
+                    cloud_remove_server(ip)
             else:  # update localhost
                 srv = server.getServerProps()
-                cloudAddServer(srv)
+                cloud_add_server(srv)
         time.sleep(pingTime)
 
 
@@ -213,7 +213,7 @@ def threaded_migrate(guest, to_server):
     hypervisor.guest_migrate(guest, to_server)
 
 
-def cloudHasServer(srv):
+def cloud_has_server(srv):
     '''return boolean if server exists in the cloud'''
     global cloud
     global cloud_lock
@@ -232,12 +232,12 @@ def cloudHasServer(srv):
     return False
 
 
-def cloudAddServer(srv):
+def cloud_add_server(srv):
     '''add a server to the cloud'''
     global cloud
     global cloud_lock
     srv['lastPing'] = time.time()
-    if not cloudHasServer(srv):  # add server to cloud
+    if not cloud_has_server(srv):  # add server to cloud
         with cloud_lock:
             # print('cloud locked add Server')
             cloud.append(srv)
@@ -251,7 +251,7 @@ def cloudAddServer(srv):
         # print('cloud unlocked update Server')
 
 
-def cloudRemoveServer(ip):
+def cloud_remove_server(ip):
     global cloud
     global cloud_lock
     with cloud_lock:
@@ -263,7 +263,7 @@ def cloudRemoveServer(ip):
     # print('cloud unlocked remove server')
 
 
-def getGuestList():
+def get_guest_list():
     '''return list of all vm's in the cloud'''
     global cloud
     global cloud_lock
@@ -274,7 +274,7 @@ def getGuestList():
     return vmlist
 
 
-def getShareList():
+def get_share_list():
     '''return list of all nfs shares in the cloud'''
     global cloud
     global cloud_lock
@@ -285,7 +285,7 @@ def getShareList():
     return shares
 
 
-def getMountList():
+def get_mount_list():
     '''return list of all nfs shares in the cloud'''
     global cloud
     global cloud_lock
