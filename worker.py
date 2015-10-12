@@ -46,7 +46,7 @@ def run():
         # with print_lock:
         # print('connection from: ' + addr[0] + ":" + str(addr[1]))
         # data = conn.recv(5120, socket.MSG_WAITALL)
-        data = conn.recv(20 * 1024)
+        data = conn.recv(20 * 1024, socket.MSG_WAITALL)
         data = data.decode()
         # print('received command: ' + str(data))
         cmd = data.split()
