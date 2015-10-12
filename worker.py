@@ -43,19 +43,22 @@ def run():
     t_scanner.start()
     while True:
         conn, addr = s.accept()
-        # with print_lock:
-        # print('connection from: ' + addr[0] + ":" + str(addr[1]))
-        # data = conn.recv(5120, socket.MSG_WAITALL)
-        data = conn.recv(20 * 1024, socket.MSG_WAITALL)
+        # ERROR this is blocking: data = conn.recv(5120, socket.MSG_WAITALL)
+        '''
+        ERROR: this blocks
+        data = ""
+        part = None
+        while part != "":
+            part = conn.recv(4096)
+            part = part.decode()
+            data += part
+        '''
+        # TODO: incomplete data error
+        data = conn.recv(20 * 1024)
         data = data.decode()
-        # print('received command: ' + str(data))
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
-            # print('-----result-----')
-            # print(result)
-            # print('-----end result-----')
-            # print('length: ' + str(len(result)))
             conn.sendall(str(result).encode())
         conn.close()
 
