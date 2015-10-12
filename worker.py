@@ -162,7 +162,7 @@ def do_command(cmd):
             s = json.loads(data)
             cloud_add_server(s)
         except:
-            print('invalid json: ' + data + '\nlength: ' + str(len(data)))
+            print('received invalid json: ' + data + '\nlength: ' + str(len(data)))
         props = server.get_server_props()
         props = json.dumps(props)
         return props
