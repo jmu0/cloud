@@ -83,8 +83,8 @@ elif sys.argv[1] == 'mount':
     if len(sys.argv) == 3:
         s = sys.argv[2].split('@')
         if len(s) == 2:
-            server_name = s[2]
-            share_name = s[1]
+            server_name = s[1]
+            share_name = s[0]
         else:
             server_name = server.get_hostname()
             share_name = sys.argv[2]

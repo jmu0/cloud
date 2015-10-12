@@ -109,7 +109,7 @@ def handshake(ip):
         # cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
-        data = s.recv(10 * 1024, socket.MSG_WAITALL)
+        data = s.recv(20 * 1024, socket.MSG_WAITALL)
         data = data.decode()
         # print('handshake answer: ' + str(data))
         data = json.loads(data)
