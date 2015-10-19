@@ -2,6 +2,7 @@ import os
 import sys
 import socket
 import subprocess
+import json
 
 
 def is_nfs_server():
@@ -71,6 +72,13 @@ def line_to_share(line):
             'options': options,
             'server': servername
         }
+        meta_path = share['path'] + '/.cloud.json'
+        if os.path.isfile(meta_path):
+            with open(meta_path, 'r') as f:
+                meta_data = f.read()
+                share['meta'] = json.loads(meta_data)
+        else:
+            share['meta'] = False
         return share
     else:
         return False

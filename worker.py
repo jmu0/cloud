@@ -6,6 +6,7 @@ import threading
 import time
 import storage
 
+
 cloud = []
 cloud_lock = threading.Lock()
 print_lock = threading.Lock()
@@ -181,6 +182,10 @@ def do_command(cmd):
         mounts = get_mount_list()
         mounts = json.dumps(mounts)
         return mounts
+    elif cmd[0] == 'resources':
+        resources = get_resources()
+        resources = json.dumps(resources)
+        return resources
     elif cmd[0] == 'cmd':
         try:
             cmd = ''.join(cmd[1:])
@@ -197,6 +202,7 @@ def do_command(cmd):
             return mount(cmd['share_name'], cmd['server_name'])
         elif cmd['action'] == 'create_share':
             return create_share(cmd['path'])
+
         return 'invalid action: ' + str(cmd['action'])
 
 
@@ -316,3 +322,37 @@ def get_mount_list():
         for s in cloud:
             mounts = mounts + s['mounts']
     return mounts
+
+
+def get_resources():
+    '''get list of resources'''
+    global cloud
+    global cloud_lock
+    res = {
+        'guests': {},
+        'shares': {}
+    }
+    with cloud_lock:
+        for server in cloud:
+            print(server['name'])
+            for g in server['guests']:
+                if g['name'] in res['guests']:
+                    pass
+                else:
+                    res['guests'][g['name']] = {
+                        'image_path': g['image_path'],
+                        'running': True,
+                        'shares': [] }
+            for s in server['shares']:
+                if 'meta' in s:
+                    if s['meta']['type'] == 'guest':
+                        if s['meta']['guest_name'] in res['guests']:
+                            pass
+                        else:
+                            image_path = '/mnt/' + server['name'] + '/' + s['name'] + '/' + s['meta']['guest_name'] + '.img'
+                            res['guests'][s['meta']['guest_name']] = {
+                                'image_path': image_path,
+                                'running': False,
+                                'shares': [] }
+                        res['guests'][s['meta']['guest_name']]['shares'].append(s)
+    return res

@@ -27,6 +27,10 @@ def get_mounts():
     return server.get_from_socket('mounts')
 
 
+def get_resources():
+    return server.get_from_socket('resources')
+
+
 if len(sys.argv) == 1:
     printer.print_help()
 elif sys.argv[1] == 'help':
@@ -52,6 +56,8 @@ elif sys.argv[1] == 'shares':
     printer.print_share_list(get_shares())
 elif sys.argv[1] == 'mounts':
     printer.print_mount_list(get_mounts())
+elif sys.argv[1] == 'resources':
+    print(get_resources())
 elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
         ''' migrate guest to server'''
