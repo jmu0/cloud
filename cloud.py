@@ -57,7 +57,8 @@ elif sys.argv[1] == 'shares':
 elif sys.argv[1] == 'mounts':
     printer.print_mount_list(get_mounts())
 elif sys.argv[1] == 'resources':
-    print(get_resources())
+    printer.print_resources(get_resources())
+    # print(get_resources())
 elif sys.argv[1] == 'migrate':
     if len(sys.argv) == 4:
         ''' migrate guest to server'''

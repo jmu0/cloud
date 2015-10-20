@@ -1,3 +1,4 @@
+import json
 margin = 2
 
 
@@ -121,3 +122,23 @@ def print_mount_list(lst):
         print_list_of_dictionaries(keys, lst)
     else:
         print('no list')
+
+
+def print_resources(resources):
+    for name, data in resources['guests'].items():
+        indent = {
+            1: '  ',
+            2: '    ',
+            3: '      '
+        }
+        print('')
+        print(name)
+        for key, value in data.items():
+            line = indent[1] + key + ": "
+            if type(value).__name__ == 'list':
+                for i in value:
+                    line += '\n' + indent[2] + json.dumps(i)
+            else:
+                line += str(value)
+            print(line)
+        print('')
