@@ -111,6 +111,8 @@ def handshake(ip):
         s.sendall(cmd)
         data = s.recv(20 * 1024, socket.MSG_WAITALL)
         data = data.decode()
+        s.close()
+
         # print('handshake answer: ' + str(data))
         data = json.loads(data)
         data['lastPing'] = time.time()

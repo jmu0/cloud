@@ -55,8 +55,18 @@ def run():
             data += part
         '''
         # TODO: incomplete data error
+        ''' DEZE WERKT
         tmp = conn.recv(20 * 1024)
         data = tmp.decode()
+        '''
+        data = ""
+        tmp = conn.recv(20 * 1024)
+        print('receiving...')
+        while tmp:
+            print('receiving in loop ...')
+            data += tmp.decode()
+            tmp = conn.recv(20 * 1024)
+        print('receive done...')
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
