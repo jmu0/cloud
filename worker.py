@@ -55,11 +55,8 @@ def run():
             data += part
         '''
         # TODO: incomplete data error
-        data = ""
-        while "\n" not in data:
-            print('reading...')
-            tmp = conn.recv(20 * 1024)
-            data += tmp.decode()
+        tmp = conn.recv(20 * 1024)
+        data = tmp.decode()
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
