@@ -43,8 +43,11 @@ def run():
     t_scanner.daemon = True
     t_scanner.start()
     while True:
+        # TODO: incomplete data error
         conn, addr = s.accept()
+
         # ERROR this is blocking: data = conn.recv(5120, socket.MSG_WAITALL)
+
         '''
         ERROR: this blocks
         data = ""
@@ -54,11 +57,12 @@ def run():
             part = part.decode()
             data += part
         '''
-        # TODO: incomplete data error
-        ''' DEZE WERKT
+
+        ''' DEZE WERKT'''
         tmp = conn.recv(20 * 1024)
         data = tmp.decode()
-        '''
+
+        ''' DEZE BLOKKEERT
         data = ""
         tmp = conn.recv(20 * 1024)
         print('receiving...')
@@ -67,6 +71,8 @@ def run():
             data += tmp.decode()
             tmp = conn.recv(20 * 1024)
         print('receive done...')
+        '''
+
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
