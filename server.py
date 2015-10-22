@@ -106,7 +106,7 @@ def handshake(ip):
         s.connect((ip, get_cloud_port()))
         s.settimeout(None)
         cmd = 'handshake ' + json.dumps(get_server_props())
-        # cmd += '\n'
+        cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
         data = s.recv(20 * 1024, socket.MSG_WAITALL)

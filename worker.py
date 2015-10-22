@@ -55,8 +55,11 @@ def run():
             data += part
         '''
         # TODO: incomplete data error
-        data = conn.recv(20 * 1024)
-        data = data.decode()
+        data = ""
+        while "\n" not in data:
+            print('reading...')
+            tmp = conn.recv(20 * 1024)
+            data += tmp.decode()
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
@@ -333,26 +336,26 @@ def get_resources():
         'shares': {}
     }
     with cloud_lock:
-        for server in cloud:
-            print(server['name'])
-            for g in server['guests']:
+        for srv in cloud:
+            print(srv['name'])
+            for g in srv['guests']:
                 if g['name'] in res['guests']:
                     pass
                 else:
                     res['guests'][g['name']] = {
                         'image_path': g['image_path'],
                         'running': True,
-                        'shares': [] }
-            for s in server['shares']:
+                        'shares': []}
+            for s in srv['shares']:
                 if 'meta' in s:
                     if s['meta']['type'] == 'guest':
                         if s['meta']['guest_name'] in res['guests']:
                             pass
                         else:
-                            image_path = '/mnt/' + server['name'] + '/' + s['name'] + '/' + s['meta']['guest_name'] + '.img'
+                            image_path = '/mnt/' + srv['name'] + '/' + s['name'] + '/' + s['meta']['guest_name'] + '.img'
                             res['guests'][s['meta']['guest_name']] = {
                                 'image_path': image_path,
                                 'running': False,
-                                'shares': [] }
+                                'shares': []}
                         res['guests'][s['meta']['guest_name']]['shares'].append(s)
     return res
