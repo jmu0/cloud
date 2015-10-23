@@ -81,19 +81,21 @@ def run():
         '''
         tmp = conn.recv(20 * 1024)
         data += tmp.decode()
-        print('=============================')
+        print('socket data: ' + str(addr))
+        # print('=============================')
         print(data)
+        
         if '\n' in data:
-            print('new line found')
+            # print('new line found')
             cmd = data.split()
             if (cmd):
                 result = do_command(cmd)
-                result += '/n'
+                result += '\n'
                 conn.sendall(str(result).encode())
-            conn.close()
             data = ''
-        else: 
-            print('received data, no new line')
+        # else: 
+            # print('received data, no new line')
+        conn.close()
 
 
 
