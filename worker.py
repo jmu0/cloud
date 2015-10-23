@@ -44,16 +44,6 @@ def run():
     t_scanner.start()
     while True:
         conn, addr = s.accept()
-        # ERROR this is blocking: data = conn.recv(5120, socket.MSG_WAITALL)
-        '''
-        ERROR: this blocks
-        data = ""
-        part = None
-        while part != "":
-            part = conn.recv(4096)
-            part = part.decode()
-            data += part
-        '''
         # TODO: incomplete data error
         data = conn.recv(20 * 1024)
         data = data.decode()
