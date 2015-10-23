@@ -42,16 +42,65 @@ def run():
     t_scanner = threading.Thread(target=threaded_scanner)
     t_scanner.daemon = True
     t_scanner.start()
+    data = ''
     while True:
+        # TODO: incomplete data error
         conn, addr = s.accept()
+<<<<<<< HEAD
         # TODO: incomplete data error
         data = conn.recv(20 * 1024)
         data = data.decode()
+=======
+
+        # ERROR this is blocking: data = conn.recv(5120, socket.MSG_WAITALL)
+
+        '''
+        ERROR: this blocks
+        data = ""
+        part = None
+        while part != "":
+            part = conn.recv(4096)
+            part = part.decode()
+            data += part
+        '''
+
+        ''' DEZE BLOKKEERT
+        data = ""
+        tmp = conn.recv(20 * 1024)
+        print('receiving...')
+        while tmp:
+            print('receiving in loop ...')
+            data += tmp.decode()
+            tmp = conn.recv(20 * 1024)
+        print('receive done...')
+        '''
+
+        ''' DEZE GEEFT INCOMPLEET '''
+        tmp = conn.recv(20 * 1024)
+        data = tmp.decode()
+>>>>>>> deb6b0f8e046c6898ac3a2230164cc45053482ec
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
             conn.sendall(str(result).encode())
         conn.close()
+
+        ''' DEZE WERKT OOK NIET tmp = conn.recv(20 * 1024) data += tmp.decode()
+        print('socket data: ' + str(addr))
+        # print('=============================')
+        # print(data)
+        if '\n' in data:
+            # print('new line found')
+            cmd = data.split()
+            if (cmd):
+                result = do_command(cmd)
+                result += '\n'
+                conn.sendall(str(result).encode())
+            data = ''
+        conn.close()
+        print('closed')
+        '''
+
 
 
 def migrate(guest_name, to_server):
@@ -323,26 +372,26 @@ def get_resources():
         'shares': {}
     }
     with cloud_lock:
-        for server in cloud:
-            print(server['name'])
-            for g in server['guests']:
+        for srv in cloud:
+            print(srv['name'])
+            for g in srv['guests']:
                 if g['name'] in res['guests']:
                     pass
                 else:
                     res['guests'][g['name']] = {
                         'image_path': g['image_path'],
                         'running': True,
-                        'shares': [] }
-            for s in server['shares']:
+                        'shares': []}
+            for s in srv['shares']:
                 if 'meta' in s:
                     if s['meta']['type'] == 'guest':
                         if s['meta']['guest_name'] in res['guests']:
                             pass
                         else:
-                            image_path = '/mnt/' + server['name'] + '/' + s['name'] + '/' + s['meta']['guest_name'] + '.img'
+                            image_path = '/mnt/' + srv['name'] + '/' + s['name'] + '/' + s['meta']['guest_name'] + '.img'
                             res['guests'][s['meta']['guest_name']] = {
                                 'image_path': image_path,
                                 'running': False,
-                                'shares': [] }
+                                'shares': []}
                         res['guests'][s['meta']['guest_name']]['shares'].append(s)
     return res
