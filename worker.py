@@ -42,6 +42,7 @@ def run():
     t_scanner = threading.Thread(target=threaded_scanner)
     t_scanner.daemon = True
     t_scanner.start()
+    data = ''
     while True:
         # TODO: incomplete data error
         conn, addr = s.accept()
@@ -58,10 +59,6 @@ def run():
             data += part
         '''
 
-        ''' DEZE WERKT'''
-        tmp = conn.recv(20 * 1024)
-        data = tmp.decode()
-
         ''' DEZE BLOKKEERT
         data = ""
         tmp = conn.recv(20 * 1024)
@@ -73,11 +70,31 @@ def run():
         print('receive done...')
         '''
 
+        ''' DEZE GEEFT INCOMPLEET 
+        tmp = conn.recv(20 * 1024)
+        data = tmp.decode()
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
             conn.sendall(str(result).encode())
         conn.close()
+        '''
+        tmp = conn.recv(20 * 1024)
+        data += tmp.decode()
+        print('=============================')
+        print(data)
+        if '\n' in data:
+            print('new line found')
+            cmd = data.split()
+            if (cmd):
+                result = do_command(cmd)
+                result += '/n'
+                conn.sendall(str(result).encode())
+            conn.close()
+            data = ''
+        else: 
+            print('received data, no new line')
+
 
 
 def migrate(guest_name, to_server):
