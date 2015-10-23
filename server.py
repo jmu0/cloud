@@ -109,12 +109,13 @@ def handshake(ip):
         cmd += '\n'
         cmd = cmd.encode()
         s.sendall(cmd)
+        data = ''
         while '\n' not in data:
             print('receiving')
-            tmp = s.recv()
-            data += tmp.decode()
+            tmp = s.recv(1024)
+            data += tmp
         # data = s.recv(20 * 1024, socket.MSG_WAITALL)
-        if '\n' in data: 
+        if '\n' in data:
             data = data[:-1]
         data = data.decode()
         s.close()
@@ -123,6 +124,7 @@ def handshake(ip):
         data['lastPing'] = time.time()
         return data
     except:
+        print(data)
         print('handshake failed: ' + str(ip) + " "
               + str(sys.exc_info()[1]))
         return False
