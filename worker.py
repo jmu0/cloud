@@ -83,8 +83,7 @@ def run():
         data += tmp.decode()
         print('socket data: ' + str(addr))
         # print('=============================')
-        print(data)
-        
+        # print(data)
         if '\n' in data:
             # print('new line found')
             cmd = data.split()
@@ -93,9 +92,8 @@ def run():
                 result += '\n'
                 conn.sendall(str(result).encode())
             data = ''
-        # else: 
-            # print('received data, no new line')
         conn.close()
+        print('closed')
 
 
 
