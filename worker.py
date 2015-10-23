@@ -70,7 +70,7 @@ def run():
         print('receive done...')
         '''
 
-        ''' DEZE GEEFT INCOMPLEET 
+        ''' DEZE GEEFT INCOMPLEET '''
         tmp = conn.recv(20 * 1024)
         data = tmp.decode()
         cmd = data.split()
@@ -78,9 +78,8 @@ def run():
             result = do_command(cmd)
             conn.sendall(str(result).encode())
         conn.close()
-        '''
-        tmp = conn.recv(20 * 1024)
-        data += tmp.decode()
+
+        ''' DEZE WERKT OOK NIET tmp = conn.recv(20 * 1024) data += tmp.decode()
         print('socket data: ' + str(addr))
         # print('=============================')
         # print(data)
@@ -94,6 +93,7 @@ def run():
             data = ''
         conn.close()
         print('closed')
+        '''
 
 
 
