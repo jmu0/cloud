@@ -3,6 +3,8 @@ package functions
 import (
 	"bytes"
 	// "fmt"
+	"io/ioutil"
+	// "log"
 	"net"
 	"net/rpc"
 	"os"
@@ -56,4 +58,31 @@ func GetStringFromServer(Host, Command, Parameters string) (string, error) {
 		return "", err
 	}
 	return *result, nil
+}
+
+//read file into string
+func ReadFile(path string) (string, error) {
+	cont, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	} else {
+		return string(cont), nil
+	}
+}
+
+//write file
+func WriteFile(path string, contents string) error {
+	//write file
+	file, err := os.Create(path)
+	defer file.Close()
+	if err != nil {
+		return err
+	} else {
+		_, err := file.WriteString(contents)
+		if err != nil {
+			return err
+		} else {
+			return nil
+		}
+	}
 }

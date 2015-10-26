@@ -2,8 +2,9 @@ package main
 
 import (
 	f "cloud/functions"
-	"cloud/server"
-	// "fmt"
+	h "cloud/hypervisor"
+	s "cloud/server"
+	"fmt"
 	"log"
 	"os"
 )
@@ -14,10 +15,33 @@ func main() {
 
 //Route command from args
 func route(args []string) {
-	//print args
-	log.Println("args:", args)
 	//Routing command
+	if len(args) > 0 {
+		if args[0] == "run" {
+			//run server
+			s.Serve()
+		} else if args[0] == "ishypervisor" {
+			fmt.Println(h.IsHypervisor())
+		} else if args[0] == "test" {
+			test()
+		} else {
+			printHelp()
+		}
+	} else {
+		// test()
+		printHelp()
+	}
+}
 
+func printHelp() {
+	help, err := f.ReadFile("help.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(help)
+}
+
+func test() {
 	/*
 		name, _ := f.GetLocalhostName()
 		fmt.Println("hostname:", name)
@@ -33,8 +57,7 @@ func route(args []string) {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(res)
-
-	go server.Serve()
+	go s.Serve()
 	val, err := f.GetStringFromServer("nuc", "Server.Hostname", "")
 	if err != nil {
 		log.Fatal(err)
