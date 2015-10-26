@@ -48,9 +48,8 @@ func ReadFile(path string) (string, error) {
 	cont, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", err
-	} else {
-		return string(cont), nil
 	}
+	return string(cont), nil
 }
 
 //write file
@@ -64,10 +63,9 @@ func WriteFile(path string, contents string) error {
 		_, err := file.WriteString(contents)
 		if err != nil {
 			return err
-		} else {
-			return nil
 		}
 	}
+	return nil
 }
 
 type MacAddress struct {
