@@ -1,26 +1,41 @@
 package server
 
 import (
+	f "cloud/functions"
+	// "cloud/hypervisor"
+	// "cloud/storage"
 	// "fmt"
-	// "log"
+	"log"
 	"net"
-	"os"
+	"net/rpc"
 )
 
-//get the name of localhost
-func GetLocalhostName() (string, error) {
-	name, err := os.Hostname()
+type Server struct{}
+
+func Serve() error {
+	rpc.Register(new(Server))
+	port := f.GetServerPort()
+	ln, err := net.Listen("tcp", port)
+	log.Println("listening on port", port)
 	if err != nil {
-		return "", err
+		log.Fatal(err)
 	}
-	return string(name), nil
+	for {
+		c, err := ln.Accept()
+		log.Println("conection accepted")
+		if err != nil {
+			log.Output(1, err.Error())
+			continue
+		}
+		go rpc.ServeConn(c)
+	}
 }
 
-//lookup ip address for hostname
-func GetIP(hostName string) (string, error) {
-	ip, err := net.LookupHost(hostName)
+func (s *Server) Hostname(_, reply *string) error {
+	r, err := f.GetLocalhostName()
 	if err != nil {
-		return "", err
+		return err
 	}
-	return ip[0], nil
+	*reply = r
+	return nil
 }
