@@ -37,7 +37,7 @@ func Serve() error {
 		c, err := ln.Accept()
 		log.Println("conection accepted")
 		if err != nil {
-			log.Output(1, err.Error())
+			log.Println(err)
 			continue
 		}
 		go rpc.ServeConn(c)
