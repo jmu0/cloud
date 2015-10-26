@@ -42,6 +42,7 @@ func Serve() error {
 		}
 		go rpc.ServeConn(c)
 	}
+	return nil
 }
 
 //get load average from /proc/loadavg
