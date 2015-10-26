@@ -11,8 +11,7 @@ func IsHypervisor() (bool, error) {
 	} else {
 		if len(res) > 0 {
 			return true, nil
-		} else {
-			return false, nil
 		}
 	}
+	return false, nil
 }
