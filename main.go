@@ -1,9 +1,9 @@
 package main
 
 import (
-	f "cloud/functions"
-	h "cloud/hypervisor"
-	s "cloud/server"
+	"cloud/functions"
+	"cloud/hypervisor"
+	"cloud/server"
 	"fmt"
 	"log"
 	"os"
@@ -19,9 +19,9 @@ func route(args []string) {
 	if len(args) > 0 {
 		if args[0] == "run" {
 			//run server
-			s.Serve()
+			server.Serve()
 		} else if args[0] == "ishypervisor" {
-			fmt.Println(h.IsHypervisor())
+			fmt.Println(hypervisor.IsHypervisor())
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				wake(args[1])
@@ -40,7 +40,7 @@ func route(args []string) {
 }
 
 func printHelp() {
-	help, err := f.ReadFile("help.txt")
+	help, err := functions.ReadFile("help.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func printHelp() {
 }
 
 func wake(hostname string) {
-	str, err := f.Wake(hostname)
+	str, err := functions.Wake(hostname)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -72,13 +72,11 @@ func test() {
 	// }
 	// fmt.Println(res)
 
-	/*
-		go s.Serve()
-		val, err := f.GetStringFromServer("nuc", "Server.Hostname", "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println("data from server:", val)
-	*/
+	go server.Serve()
+	val, err := server.GetPropertiesFromServer("nuc")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("data from server:", val)
 
 }
