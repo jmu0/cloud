@@ -46,61 +46,13 @@ def run():
     while True:
         # TODO: incomplete data error
         conn, addr = s.accept()
-<<<<<<< HEAD
-        # TODO: incomplete data error
-        data = conn.recv(20 * 1024)
-        data = data.decode()
-=======
-
-        # ERROR this is blocking: data = conn.recv(5120, socket.MSG_WAITALL)
-
-        '''
-        ERROR: this blocks
-        data = ""
-        part = None
-        while part != "":
-            part = conn.recv(4096)
-            part = part.decode()
-            data += part
-        '''
-
-        ''' DEZE BLOKKEERT
-        data = ""
-        tmp = conn.recv(20 * 1024)
-        print('receiving...')
-        while tmp:
-            print('receiving in loop ...')
-            data += tmp.decode()
-            tmp = conn.recv(20 * 1024)
-        print('receive done...')
-        '''
-
-        ''' DEZE GEEFT INCOMPLEET '''
         tmp = conn.recv(20 * 1024)
         data = tmp.decode()
->>>>>>> deb6b0f8e046c6898ac3a2230164cc45053482ec
         cmd = data.split()
         if (cmd):
             result = do_command(cmd)
             conn.sendall(str(result).encode())
         conn.close()
-
-        ''' DEZE WERKT OOK NIET tmp = conn.recv(20 * 1024) data += tmp.decode()
-        print('socket data: ' + str(addr))
-        # print('=============================')
-        # print(data)
-        if '\n' in data:
-            # print('new line found')
-            cmd = data.split()
-            if (cmd):
-                result = do_command(cmd)
-                result += '\n'
-                conn.sendall(str(result).encode())
-            data = ''
-        conn.close()
-        print('closed')
-        '''
-
 
 
 def migrate(guest_name, to_server):
