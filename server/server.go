@@ -31,6 +31,12 @@ func Serve() error {
 	}
 }
 
+//respond to ping
+func (s *Server) Ping(_, reply *string) error {
+	*reply = "pong"
+	return nil
+}
+
 func (s *Server) Hostname(_, reply *string) error {
 	r, err := f.GetLocalhostName()
 	if err != nil {

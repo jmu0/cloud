@@ -1,6 +1,18 @@
-{
-"server1":"00:1c:23:ba:38:77",
-"server2":"00:1b:78:6e:5b:96",
-"cloud01":"00:0f:fe:58:c2:f4",
-"htpc":"50:e5:49:be:e8:9e"
-}
+[
+    {
+        "Hostname": "server1",
+        "Mac": "00:1c:23:ba:38:77"
+    },
+    {
+        "Hostname": "server2",
+        "Mac": "00:1b:78:6e:5b:96"
+    },
+    {
+        "Hostname": "cloud01",
+        "Mac": "00:0f:fe:58:c2:f4"
+    },
+    {
+        "Hostname": "htpc",
+        "Mac": "50:e5:49:be:e8:9e"
+    }
+]

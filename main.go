@@ -22,14 +22,20 @@ func route(args []string) {
 			s.Serve()
 		} else if args[0] == "ishypervisor" {
 			fmt.Println(h.IsHypervisor())
+		} else if args[0] == "wake" {
+			if len(args) == 2 {
+				wake(args[1])
+			} else {
+				log.Fatal("Invalid arguments")
+			}
 		} else if args[0] == "test" {
 			test()
 		} else {
 			printHelp()
 		}
 	} else {
-		// test()
-		printHelp()
+		test()
+		// printHelp()
 	}
 }
 
@@ -41,6 +47,14 @@ func printHelp() {
 	fmt.Println(help)
 }
 
+func wake(hostname string) {
+	str, err := f.Wake(hostname)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Println(str)
+	}
+}
 func test() {
 	/*
 		name, _ := f.GetLocalhostName()
@@ -57,10 +71,14 @@ func test() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(res)
-	go s.Serve()
-	val, err := f.GetStringFromServer("nuc", "Server.Hostname", "")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("data from server:", val)
+
+	/*
+		go s.Serve()
+		val, err := f.GetStringFromServer("nuc", "Server.Hostname", "")
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("data from server:", val)
+	*/
+
 }
