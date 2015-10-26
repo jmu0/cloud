@@ -22,6 +22,8 @@ func route(args []string) {
 			server.Serve()
 		} else if args[0] == "ishypervisor" {
 			fmt.Println(hypervisor.IsHypervisor())
+		} else if args[0] == "servers" {
+			printServerList()
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				wake(args[1])
@@ -55,15 +57,9 @@ func wake(hostname string) {
 		fmt.Println(str)
 	}
 }
+
 func test() {
-	log.Println("scanning network...")
-	lst, err := server.GetServerList()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, srv := range lst {
-		log.Println(srv)
-	}
+	fmt.Println("Test")
 
 	/*
 		var val server.Server
@@ -95,7 +91,88 @@ func test() {
 
 	// go server.Serve()
 }
-func printServers(lst []server.Server) error {
 
+//Prints list of servers
+func printServerList() error {
+	//get servers
+	lst, err := server.GetServerList()
+	if err != nil {
+		log.Fatal(err)
+	}
+	//Get field lengths
+	fields := map[string]int{
+		"IP":           0,
+		"Hostname":     0,
+		"Load":         0,
+		"IsHypervisor": 8,
+		"IsNfsServer":  8,
+	}
+	for _, srv := range lst {
+		if fields["IP"] < len(srv.IP) {
+			fields["IP"] = len(srv.IP)
+		}
+		if fields["Hostname"] < len(srv.Hostname) {
+			fields["Hostname"] = len(srv.Hostname)
+		}
+		if fields["Load"] < len(srv.Load) {
+			fields["Load"] = len(srv.Load)
+		}
+	}
+	//headers
+	var line string = ""
+	var tmp string = ""
+	fmt.Println("")
+	tmp = "IP"
+	makeLength(&tmp, fields["IP"])
+	line += tmp + " "
+	tmp = "Hostname"
+	makeLength(&tmp, fields["Hostname"])
+	line += tmp + " "
+	tmp = "Load"
+	makeLength(&tmp, fields["Load"])
+	line += tmp + " "
+	line += "Virsh Nfs  "
+	fmt.Println(line)
+	//underline
+	for i := 0; i < len(line); i++ {
+		fmt.Printf("-")
+
+	}
+	fmt.Printf("\n")
+	//servers
+	f := "False "
+	t := "True  "
+	for _, srv := range lst {
+		line = ""
+		makeLength(&srv.IP, fields["IP"])
+		makeLength(&srv.Hostname, fields["Hostname"])
+		srv.Load = srv.Load[:len(srv.Load)-1]
+		makeLength(&srv.Load, fields["Load"])
+		line += srv.IP + " "
+		line += srv.Hostname + " "
+		line += srv.Load + " "
+		if srv.IsHypervisor {
+			line += t
+		} else {
+			line += f
+		}
+		if srv.IsNfsServer {
+			line += t
+		} else {
+			line += f
+		}
+		fmt.Println(line)
+	}
+	fmt.Println("")
 	return nil
+}
+
+//makes string a certain length
+func makeLength(f *string, l int) {
+	for {
+		if len(*f) >= l {
+			return
+		}
+		*f += " "
+	}
 }
