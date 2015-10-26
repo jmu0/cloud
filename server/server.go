@@ -62,38 +62,32 @@ func (srv *Server) Ping(par string, reply *string) error {
 func (srv *Server) Properties(par string, reply *Server) error {
 	// log.Println("Server.Properties")
 	var err error
-	srv.Hostname, err = functions.GetLocalhostName()
+	reply.Hostname, err = functions.GetLocalhostName()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	srv.IP, err = functions.GetIP(srv.Hostname)
+	reply.IP, err = functions.GetIP(reply.Hostname)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	srv.IsHypervisor, err = hypervisor.IsHypervisor()
+	reply.IsHypervisor, err = hypervisor.IsHypervisor()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	srv.IsNfsServer, err = storage.IsNfsServer()
+	reply.IsNfsServer, err = storage.IsNfsServer()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	srv.Load, err = getLoad()
+	reply.Load, err = getLoad()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	log.Println(srv)
-	reply = srv
-	/*
-		repl := Server{
-			Hostname:     lh,
-			IP:           ip,
-			IsHypervisor: ishv,
-			IsNfsServer:  isnfs,
-			Load:         ld,
-		}
-		reply = &repl
-	*/
+	log.Println(reply)
 	return nil
 }
 
@@ -113,19 +107,19 @@ func GetStringFromServer(Host, Command, Parameters string) (string, error) {
 
 //get server struct from socket
 func GetPropertiesFromServer(Host string) (Server, error) {
-	// log.Println("GetPropertiesFromServer")
+	log.Println("GetPropertiesFromServer")
 	c, err := rpc.Dial("tcp", Host+GetServerPort())
 	if err != nil {
-		// log.Println("rpc connection error")
+		log.Println("rpc connection error")
 		return Server{}, err
 	}
-	result := Server{}
-	err = c.Call("Server.Properties", "", &result)
-	// log.Printf("result type: %T", result)
-	// log.Println("result:", result)
+	result := new(Server)
+	err = c.Call("Server.Properties", "", result)
 	if err != nil {
-		// log.Println("rpc call error")
+		log.Println("rpc call error")
 		return Server{}, err
 	}
-	return result, nil
+	log.Printf("result type: %T", result)
+	log.Println("result:", result)
+	return *result, nil
 }

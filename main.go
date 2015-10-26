@@ -56,6 +56,13 @@ func wake(hostname string) {
 	}
 }
 func test() {
+	val, err := server.GetPropertiesFromServer("htpc")
+	if err != nil {
+		log.Println("value:", val)
+		log.Fatal(err)
+	}
+	log.Println("data from server:", val)
+
 	/*
 		name, _ := f.GetLocalhostName()
 		fmt.Println("hostname:", name)
@@ -72,11 +79,5 @@ func test() {
 	// }
 	// fmt.Println(res)
 
-	go server.Serve()
-	val, err := server.GetPropertiesFromServer("nuc")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("data from server:", val)
-
+	// go server.Serve()
 }
