@@ -8,6 +8,8 @@ import (
 	"log"
 	"net"
 	"net/rpc"
+	"strconv"
+	"time"
 )
 
 //structure for server properties and methods
@@ -88,7 +90,7 @@ func (srv *Server) Properties(par string, reply *Server) error {
 		log.Println(err)
 		return err
 	}
-	log.Println(reply)
+	// log.Println(reply)
 	return nil
 }
 
@@ -108,19 +110,51 @@ func GetStringFromServer(Host, Command, Parameters string) (string, error) {
 
 //get server struct from socket
 func GetPropertiesFromServer(Host string) (Server, error) {
-	log.Println("GetPropertiesFromServer")
+	// log.Println("GetPropertiesFromServer")
 	c, err := rpc.Dial("tcp", Host+GetServerPort())
 	if err != nil {
-		log.Println("rpc connection error")
+		// log.Println("rpc connection error")
 		return Server{}, err
 	}
 	result := new(Server)
 	err = c.Call("Server.Properties", "", result)
 	if err != nil {
-		log.Println("rpc call error")
+		// log.Println("rpc call error")
 		return Server{}, err
 	}
-	log.Printf("result type: %T", result)
-	log.Println("result:", result)
+	// log.Printf("result type: %T", result)
+	// log.Println("result:", result)
 	return *result, nil
+}
+
+//Returns ip addresses of servers
+func ScanNetwork() ([]string, error) {
+	lst := []string{}
+	for i := 1; i < 255; i++ {
+		ip := "10.0.0." + strconv.Itoa(i)
+		_, err := net.DialTimeout("tcp", ip+":7777", time.Microsecond*500)
+		if err == nil {
+			lst = append(lst, ip)
+		}
+	}
+	return lst, nil
+}
+
+//get list of servers/properties
+func GetServerList() ([]Server, error) {
+	lst := []Server{}
+	ips, err := ScanNetwork()
+	if err != nil {
+		log.Println("error during network scan", err)
+		return []Server{}, err
+	}
+	for _, ip := range ips {
+		srv, err := GetPropertiesFromServer(ip)
+		if err != nil {
+			log.Println("error while getting properties for", ip, err)
+			// return []Server{}, err
+		}
+		lst = append(lst, srv)
+	}
+	return lst, nil
 }

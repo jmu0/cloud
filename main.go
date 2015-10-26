@@ -56,12 +56,26 @@ func wake(hostname string) {
 	}
 }
 func test() {
-	val, err := server.GetPropertiesFromServer("htpc")
+	log.Println("scanning network...")
+	lst, err := server.GetServerList()
 	if err != nil {
-		log.Println("value:", val)
 		log.Fatal(err)
 	}
-	log.Println("data from server:", val)
+	for _, srv := range lst {
+		log.Println(srv)
+	}
+
+	/*
+		var val server.Server
+		var err error
+		host, _ := functions.GetLocalhostName()
+		val, err = server.GetPropertiesFromServer(host)
+		if err == nil {
+			log.Println("value:", val)
+			log.Fatal(err)
+		}
+		log.Println("data from server:", val)
+	*/
 
 	/*
 		name, _ := f.GetLocalhostName()
@@ -80,4 +94,8 @@ func test() {
 	// fmt.Println(res)
 
 	// go server.Serve()
+}
+func printServers(lst []server.Server) error {
+
+	return nil
 }

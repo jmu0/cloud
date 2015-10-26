@@ -7,7 +7,7 @@ import (
 func IsNfsServer() (bool, error) {
 	res, err := f.ExecShell("pgrep", []string{"nfsd"})
 	if err != nil {
-		return false, err
+		return false, nil
 	} else {
 		if len(res) > 0 {
 			return true, nil
