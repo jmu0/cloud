@@ -29,6 +29,7 @@ func GetServerPort() string {
 //start rpc server
 func Serve() error {
 	rpc.Register(new(Server))
+	rpc.Register(new(hypervisor.Hypervisor))
 	port := GetServerPort()
 	ln, err := net.Listen("tcp", port)
 	log.Println("listening on port", port)
@@ -110,17 +111,31 @@ func GetStringFromServer(Host, Command, Parameters string) (string, error) {
 
 //get server struct from socket
 func GetPropertiesFromServer(Host string) (Server, error) {
-	// log.Println("GetPropertiesFromServer")
 	c, err := rpc.Dial("tcp", Host+GetServerPort())
 	if err != nil {
-		// log.Println("rpc connection error")
 		return Server{}, err
 	}
 	result := new(Server)
 	err = c.Call("Server.Properties", "", result)
 	if err != nil {
-		// log.Println("rpc call error")
 		return Server{}, err
+	}
+	return *result, nil
+}
+
+//get vm list from socket
+func GetVmListFromServer(Host string) ([]hypervisor.Vm, error) {
+	// log.Println("GetVmListFromServer")
+	c, err := rpc.Dial("tcp", Host+GetServerPort())
+	if err != nil {
+		// log.Println("rpc connection error")
+		return []hypervisor.Vm{}, err
+	}
+	result := new([]hypervisor.Vm)
+	err = c.Call("Hypervisor.VmList", "", result)
+	if err != nil {
+		// log.Println("rpc call error")
+		return []hypervisor.Vm{}, err
 	}
 	// log.Printf("result type: %T", result)
 	// log.Println("result:", result)
@@ -140,8 +155,27 @@ func ScanNetwork() ([]string, error) {
 	return lst, nil
 }
 
+//get list of vms from cloud servers
+func GetCloudVmList() ([]hypervisor.Vm, error) {
+	lst := []hypervisor.Vm{}
+	ips, err := ScanNetwork()
+	if err != nil {
+		// log.Println("error during network scan", err)
+		return []hypervisor.Vm{}, err
+	}
+	for _, ip := range ips {
+		vml, err := GetVmListFromServer(ip)
+		if err != nil {
+			// log.Println("error while getting vmlist for", ip, err)
+			// return []Server{}, err
+		}
+		lst = append(lst, vml...)
+	}
+	return lst, nil
+}
+
 //get list of servers/properties
-func GetServerList() ([]Server, error) {
+func GetCloudServers() ([]Server, error) {
 	lst := []Server{}
 	ips, err := ScanNetwork()
 	if err != nil {

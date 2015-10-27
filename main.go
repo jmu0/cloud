@@ -24,6 +24,8 @@ func route(args []string) {
 			fmt.Println(hypervisor.IsHypervisor())
 		} else if args[0] == "servers" {
 			printServerList()
+		} else if args[0] == "vmlist" {
+			printVmList()
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				wake(args[1])
@@ -62,6 +64,15 @@ func test() {
 	fmt.Println("Test")
 
 	/*
+		fmt.Println("list vms on nuc")
+		lst, err := server.GetVmListFromServer("nuc")
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(lst)
+	*/
+
+	/*
 		var val server.Server
 		var err error
 		host, _ := functions.GetLocalhostName()
@@ -95,7 +106,7 @@ func test() {
 //Prints list of servers
 func printServerList() error {
 	//get servers
-	lst, err := server.GetServerList()
+	lst, err := server.GetCloudServers()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -165,6 +176,19 @@ func printServerList() error {
 	}
 	fmt.Println("")
 	return nil
+}
+
+//Print list of vms in cloud
+func printVmList() {
+	fmt.Println("VM's in cloud")
+	lst, err := server.GetCloudVmList()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, v := range lst {
+		fmt.Println(v)
+	}
+
 }
 
 //makes string a certain length
