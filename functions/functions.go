@@ -17,7 +17,9 @@ import (
 func ExecShell(cmd string, args []string) (string, error) {
 	sh := exec.Command(cmd, args...)
 	var out bytes.Buffer
+	var cmderr bytes.Buffer
 	sh.Stdout = &out
+	sh.Stderr = &cmderr
 	err := sh.Run()
 	if err != nil {
 		return "", err
