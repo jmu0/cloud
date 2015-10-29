@@ -3,7 +3,7 @@ package hypervisor
 import (
 	"cloud/functions"
 	"errors"
-	// "log"
+	"log"
 	"strings"
 )
 
@@ -27,6 +27,11 @@ type Vm struct {
 }
 
 func (vm *Vm) Migrate(toHost string) error {
+	//TODO check if host is running
+	//TODO check if dest. server is up
+	str, err := functions.ExecShell("virsh", []string{
+		"--live --unsafe", vm.Name, "qemu+tcp://" + toHost + "/system"})
+	log.Println(str, err)
 	return nil
 }
 
