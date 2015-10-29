@@ -29,9 +29,12 @@ type Vm struct {
 func (vm *Vm) Migrate(toHost string) error {
 	//TODO check if host is running
 	//TODO check if dest. server is up
-	str, err := functions.ExecShell("virsh", []string{
-		"--live --unsafe", vm.Name, "qemu+tcp://" + toHost + "/system"})
+	log.Println("in vm.migrate method")
+	str, err := functions.ExecShell("virsh", []string{"--live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"})
 	log.Println(str, err)
+	if err != nil {
+		log.Println("migrate:", err)
+	}
 	return nil
 }
 
@@ -49,16 +52,20 @@ func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
 
 //migrate vm from this to dest.server
 func (h *Hypervisor) MigrateVm(par string, reply *string) error {
+	log.Println("in hypervisor.migratevm method")
 	var pars []string = strings.Fields(par)
 	if len(pars) != 2 {
 		return errors.New("invalid parameters")
 	}
 	var vmName = pars[0]
 	var toHost = pars[1]
+	log.Println("migrate parameters vmName:", vmName, ", toHost:", toHost)
 	vm, err := FindVm(vmName)
 	if err != nil {
+		log.Println("findvm function returned error")
 		return err
 	}
+	log.Println("found vm:", vm)
 	err = vm.Migrate(toHost)
 	if err == nil {
 		*reply = "migrate job started"
