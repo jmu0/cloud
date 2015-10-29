@@ -5,6 +5,7 @@ import (
 	"cloud/hypervisor"
 	"cloud/storage"
 	// "fmt"
+	"errors"
 	"log"
 	"net"
 	"net/rpc"
@@ -24,6 +25,45 @@ type Server struct {
 //get default port for rpc server
 func GetServerPort() string {
 	return ":7777"
+}
+
+//respond to ping
+func (srv *Server) Ping(par string, reply *string) error {
+	*reply = "pong"
+	return nil
+}
+
+//return server properties
+func (srv *Server) Properties(par string, reply *Server) error {
+	// log.Println("Server.Properties")
+	var err error
+	reply.Hostname, err = functions.GetLocalhostName()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	reply.IP, err = functions.GetIP(reply.Hostname)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	reply.IsHypervisor, err = hypervisor.IsHypervisor()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	reply.IsNfsServer, err = storage.IsNfsServer()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	reply.Load, err = getLoad()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	// log.Println(reply)
+	return nil
 }
 
 //start rpc server
@@ -55,44 +95,6 @@ func getLoad() (string, error) {
 		return "", err
 	}
 	return ld, nil
-}
-
-//respond to ping
-func (srv *Server) Ping(par string, reply *string) error {
-	*reply = "pong"
-	return nil
-}
-
-func (srv *Server) Properties(par string, reply *Server) error {
-	// log.Println("Server.Properties")
-	var err error
-	reply.Hostname, err = functions.GetLocalhostName()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	reply.IP, err = functions.GetIP(reply.Hostname)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	reply.IsHypervisor, err = hypervisor.IsHypervisor()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	reply.IsNfsServer, err = storage.IsNfsServer()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	reply.Load, err = getLoad()
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	// log.Println(reply)
-	return nil
 }
 
 //get string value from socket
@@ -174,6 +176,21 @@ func GetCloudVmList() ([]hypervisor.Vm, error) {
 	return lst, nil
 }
 
+//find vm in cloud
+func FindVm(vmName string) (hypervisor.Vm, error) {
+	lst, err := GetCloudVmList()
+	if err != nil {
+		return hypervisor.Vm{}, err
+	}
+	for _, v := range lst {
+		if v.Name == vmName {
+			return v, nil
+		}
+	}
+	return hypervisor.Vm{}, errors.New("Vm " + vmName + " not found.")
+
+}
+
 //get list of servers/properties
 func GetCloudServers() ([]Server, error) {
 	lst := []Server{}
@@ -191,4 +208,17 @@ func GetCloudServers() ([]Server, error) {
 		lst = append(lst, srv)
 	}
 	return lst, nil
+}
+
+//send migrate job to server where vm is running
+func MigrateVm(vmName string, toServer string) (string, error) {
+	//check if vm exists
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return "", err
+	}
+	if vm.Host == toServer {
+		return "", errors.New(vmName + " is already running on " + toServer)
+	}
+	return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
 }

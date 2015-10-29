@@ -32,6 +32,15 @@ func route(args []string) {
 			} else {
 				log.Fatal("Invalid arguments")
 			}
+		} else if args[0] == "migrate" {
+			if len(args) == 3 {
+				migrate(args[1], args[2])
+			} else if len(args) == 4 && args[1] == "all" {
+				log.Fatal("not implemented")
+			} else {
+				log.Fatal("Invalid arguments")
+			}
+
 		} else if args[0] == "test" {
 			test()
 		} else {
@@ -51,6 +60,10 @@ func printHelp() {
 	fmt.Println(help)
 }
 
+func migrate(vmName string, toServer string) {
+	log.Println("migrate", vmName, "to", toServer)
+}
+
 func wake(hostname string) {
 	str, err := functions.Wake(hostname)
 	if err != nil {
@@ -63,6 +76,8 @@ func wake(hostname string) {
 func test() {
 	fmt.Println("Test")
 
+	fmt.Println("migrate test")
+	migrate("zoneminder", "server2")
 	/*
 		fmt.Println("list vms on nuc")
 		lst, err := server.GetVmListFromServer("nuc")

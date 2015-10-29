@@ -32,7 +32,9 @@ func (vm *Vm) Migrate(toHost string) error {
 
 type Hypervisor struct{}
 
+//rpc method
 func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
+	//TODO do i need 2 functions??
 	err := VmList(reply)
 	if err != nil {
 		return err
@@ -40,6 +42,28 @@ func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
 	return nil
 }
 
+//migrate vm from this to dest.server
+func (h *Hypervisor) MigrateVm(par string, reply *string) error {
+	var pars []string = strings.Fields(par)
+	if len(pars) != 2 {
+		return errors.New("invalid parameters")
+	}
+	var vmName = pars[0]
+	var toHost = pars[1]
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return err
+	}
+	err = vm.Migrate(toHost)
+	if err == nil {
+		*reply = "migrate job started"
+	} else {
+		*reply = "error starting migrate job"
+	}
+	return err
+}
+
+//List vms on this server
 func VmList(vms *[]Vm) error {
 	str, err := functions.ExecShell("virsh", []string{"list"})
 	if err != nil {
@@ -63,6 +87,7 @@ func VmList(vms *[]Vm) error {
 	return nil
 }
 
+//Get image path from running vm
 func GetImagePath(vmName string) (string, error) {
 	str, err := functions.ExecShell("virsh", []string{"domblklist", vmName})
 	if err != nil {
@@ -73,6 +98,7 @@ func GetImagePath(vmName string) (string, error) {
 	return fields[1], nil
 }
 
+//Find vm on this server
 func FindVm(vmName string) (Vm, error) {
 	lst := []Vm{}
 	err := VmList(&lst)

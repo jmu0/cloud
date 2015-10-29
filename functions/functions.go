@@ -11,6 +11,8 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	// "reflect"
+	"strings"
 )
 
 //get output from shell command
@@ -97,7 +99,16 @@ func Wake(hostname string) (string, error) {
 		}
 	}
 	//find mac address
-	str, err := ReadFile("mac.json")
+	settings, err := GetSettings()
+	if err != nil {
+		return "", err
+	}
+	var path string
+	var ok bool
+	if path, ok = settings["macfile"]; !ok {
+		return "", errors.New("no  macfile in settings")
+	}
+	str, err := ReadFile(path)
 	if err != nil {
 		return "", err
 	}
@@ -116,4 +127,27 @@ func Wake(hostname string) (string, error) {
 		}
 	}
 	return "", errors.New("No mac address found for hostname: " + hostname)
+}
+
+//Get settings from json file
+func GetSettings() (map[string]string, error) {
+	str, err := ReadFile("/etc/cloud.conf")
+	if err != nil {
+		// log.Fatal(err)
+		return make(map[string]string), errors.New("no settings file /etc/cloud.conf")
+	}
+	settings := map[string]string{}
+	lines := strings.Split(str, "\n")
+	// log.Println("lines:", lines)
+	if len(lines) > 0 {
+		for _, line := range lines {
+			fields := strings.Fields(line)
+			// log.Println("fields:", fields)
+			if len(fields) > 1 {
+				settings[fields[0]] = strings.Join(fields[1:], " ")
+			}
+		}
+	}
+	// log.Println("settings:", settings)
+	return settings, nil
 }
