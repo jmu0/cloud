@@ -19,12 +19,12 @@ import (
 func ExecShell(cmd string, args []string) (string, error) {
 	sh := exec.Command(cmd, args...)
 	var out bytes.Buffer
-	var cmderr bytes.Buffer
+	var errString bytes.Buffer
 	sh.Stdout = &out
-	sh.Stderr = &cmderr
+	sh.Stderr = &errString
 	err := sh.Run()
-	if err != nil {
-		errStr := "Error in command: " + cmderr.String()
+	if err != nil || len(errString.String()) > 0 {
+		errStr := "Error in command: " + errString.String()
 		return "", errors.New(errStr)
 	}
 	return out.String(), nil
