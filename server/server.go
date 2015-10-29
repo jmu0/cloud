@@ -234,6 +234,16 @@ func ShutdownVm(vmName string) (string, error) {
 	return GetStringFromServer(vm.Host, "Hypervisor.ShutdownVm", vmName)
 }
 
+//find vm and shut down
+func DestroyVm(vmName string) (string, error) {
+	//check if vm exists
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return "", err
+	}
+	return GetStringFromServer(vm.Host, "Hypervisor.DestroyVm", vmName)
+}
+
 //migreate all vm's from server to server
 func MigrateAll(fromServer string, toServer string) error {
 	lst, err := GetCloudVmList()

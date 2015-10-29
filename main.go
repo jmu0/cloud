@@ -40,7 +40,18 @@ func route(args []string) {
 			} else {
 				log.Fatal("Invalid arguments")
 			}
-
+		} else if args[0] == "shutdown" {
+			if len(args) == 2 {
+				shutdown(args[1])
+			} else {
+				log.Fatal("Invalid arguments")
+			}
+		} else if args[0] == "destroy" {
+			if len(args) == 2 {
+				destroy(args[1])
+			} else {
+				log.Fatal("Invalid arguments")
+			}
 		} else if args[0] == "test" {
 			test()
 		} else {
@@ -67,6 +78,23 @@ func migrateAll(fromServer string, toServer string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func shutdown(vmName string) {
+	log.Println("shutting down ", vmName)
+	str, err := server.ShutdownVm(vmName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(str)
+}
+func destroy(vmName string) {
+	log.Println("destroying", vmName)
+	str, err := server.DestroyVm(vmName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(str)
 }
 
 func wake(hostname string) {

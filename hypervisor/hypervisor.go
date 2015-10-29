@@ -58,6 +58,18 @@ func (vm *Vm) Shutdown() {
 	}
 }
 
+//destroy guest
+func (vm *Vm) Destroy() {
+	log.Println("Destroying ", vm.Name, "on", vm.Host, "...")
+	var cmd []string = []string{"destroy" + vm.Name}
+	str, err := functions.ExecShell("virsh", cmd)
+	if err != nil {
+		log.Println("Destroy error:", str, err)
+	} else {
+		log.Println(vm.Name, "destroyed")
+	}
+}
+
 type Hypervisor struct{}
 
 //rpc method
@@ -95,6 +107,17 @@ func (h *Hypervisor) ShutdownVm(vmName string, reply *string) error {
 	}
 	go vm.Shutdown()
 	*reply = "shutdown job started"
+	return nil
+}
+
+//destroying vm on this server
+func (h *Hypervisor) DestroyVm(vmName string, reply *string) error {
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return err
+	}
+	go vm.Destroy()
+	*reply = "destroy job started"
 	return nil
 }
 
