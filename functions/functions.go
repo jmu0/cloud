@@ -4,7 +4,7 @@ import (
 	"bytes"
 	// "fmt"
 	"io/ioutil"
-	// "log"
+	"log"
 	// "cloud/server"
 	"encoding/json"
 	"errors"
@@ -24,6 +24,7 @@ func ExecShell(cmd string, args []string) (string, error) {
 	sh.Stderr = &cmderr
 	err := sh.Run()
 	if err != nil {
+		log.Println("error in command:", cmderr.String())
 		return "", err
 	}
 	return out.String(), nil
