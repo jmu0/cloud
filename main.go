@@ -36,7 +36,7 @@ func route(args []string) {
 			if len(args) == 3 {
 				migrate(args[1], args[2])
 			} else if len(args) == 4 && args[1] == "all" {
-				log.Fatal("not implemented")
+				migrateAll(args[2], args[3])
 			} else {
 				log.Fatal("Invalid arguments")
 			}
@@ -52,14 +52,6 @@ func route(args []string) {
 	}
 }
 
-func printHelp() {
-	help, err := functions.ReadFile("help.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(help)
-}
-
 func migrate(vmName string, toServer string) {
 	log.Println("migrating", vmName, "to", toServer)
 	str, err := server.MigrateVm(vmName, toServer)
@@ -67,6 +59,14 @@ func migrate(vmName string, toServer string) {
 		log.Fatal(err)
 	}
 	log.Println(str)
+}
+
+func migrateAll(fromServer string, toServer string) {
+	log.Println("migrating all vm's from", fromServer, "to", toServer)
+	err := server.MigrateAll(fromServer, toServer)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func wake(hostname string) {
@@ -124,6 +124,16 @@ func test() {
 	// fmt.Println(res)
 
 	// go server.Serve()
+}
+
+//print help from help.txt file
+func printHelp() {
+	//TODO path to helpfile in settings
+	help, err := functions.ReadFile("help.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(help)
 }
 
 //Prints list of servers
@@ -202,16 +212,69 @@ func printServerList() error {
 }
 
 //Print list of vms in cloud
-func printVmList() {
-	fmt.Println("VM's in cloud")
+func printVmList() error {
 	lst, err := server.GetCloudVmList()
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _, v := range lst {
-		fmt.Println(v)
+	//Get field lengths
+	fields := map[string]int{
+		"Name":      0,
+		"Host":      0,
+		"State":     0,
+		"ImagePath": 0,
 	}
+	for _, vm := range lst {
+		if fields["Name"] < len(vm.Name) {
+			fields["Name"] = len(vm.Name)
+		}
+		if fields["Host"] < len(vm.Host) {
+			fields["Host"] = len(vm.Host)
+		}
+		if fields["State"] < len(vm.State) {
+			fields["State"] = len(vm.State)
+		}
+		if fields["ImatePath"] < len(vm.ImagePath) {
+			fields["ImagePath"] = len(vm.ImagePath)
+		}
+	}
+	//headers
+	var line string = ""
+	var tmp string = ""
+	fmt.Println("")
+	tmp = "Name"
+	makeLength(&tmp, fields["Name"])
+	line += tmp + " "
+	tmp = "Host"
+	makeLength(&tmp, fields["Host"])
+	line += tmp + " "
+	tmp = "State"
+	makeLength(&tmp, fields["State"])
+	line += tmp + " "
+	tmp = "ImagePath"
+	makeLength(&tmp, fields["ImagePath"])
+	line += tmp
+	fmt.Println(line)
+	//underline
+	for i := 0; i < len(line); i++ {
+		fmt.Printf("-")
 
+	}
+	fmt.Printf("\n")
+	for _, vm := range lst {
+		line = ""
+		makeLength(&vm.Name, fields["Name"])
+		makeLength(&vm.Host, fields["Host"])
+		makeLength(&vm.State, fields["State"])
+		makeLength(&vm.ImagePath, fields["ImagePath"])
+		line += vm.Name + " "
+		line += vm.Host + " "
+		line += vm.State + " "
+		line += vm.ImagePath + " "
+		fmt.Println(line)
+	}
+	fmt.Println("")
+	return nil
 }
 
 //makes string a certain length

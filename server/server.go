@@ -146,10 +146,11 @@ func GetVmListFromServer(Host string) ([]hypervisor.Vm, error) {
 
 //Returns ip addresses of servers
 func ScanNetwork() ([]string, error) {
+	timeout := time.Microsecond * 500
 	lst := []string{}
 	for i := 1; i < 255; i++ {
 		ip := "10.0.0." + strconv.Itoa(i)
-		_, err := net.DialTimeout("tcp", ip+":7777", time.Microsecond*500)
+		_, err := net.DialTimeout("tcp", ip+":7777", timeout)
 		if err == nil {
 			lst = append(lst, ip)
 		}
@@ -221,4 +222,32 @@ func MigrateVm(vmName string, toServer string) (string, error) {
 		return "", errors.New(vmName + " is already running on " + toServer)
 	}
 	return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
+}
+
+//find vm and shut down
+func ShutdownVm(vmName string) (string, error) {
+	//check if vm exists
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return "", err
+	}
+	return GetStringFromServer(vm.Host, "Hypervisor.ShutdownVm", vmName)
+}
+
+//migreate all vm's from server to server
+func MigrateAll(fromServer string, toServer string) error {
+	lst, err := GetCloudVmList()
+	if err != nil {
+		return err
+	}
+	for _, vm := range lst {
+		if vm.Host == fromServer {
+			log.Println("migrating", vm.Name, "from", fromServer, "to", toServer)
+			str, err := GetStringFromServer(fromServer, "Hypervisor.MigrateVm", vm.Name+" "+toServer)
+			if err != nil {
+				log.Println(err, str)
+			}
+		}
+	}
+	return nil
 }

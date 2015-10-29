@@ -26,9 +26,15 @@ type Vm struct {
 	ImagePath string
 }
 
+//migrate guest
 func (vm *Vm) Migrate(toHost string) {
 	// log.Println("in vm.migrate method")
 	log.Println("Migrating", vm.Name, "to", toHost, "...")
+	/*
+		in /etc/libvirt/libvirtd.conf:
+			uncomment listen_tcp = 1
+			tcp_port = "16509"
+	*/
 	var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
 	// log.Println("command: virsh", cmd[0])
 	str, err := functions.ExecShell("virsh", cmd)
@@ -37,6 +43,18 @@ func (vm *Vm) Migrate(toHost string) {
 		log.Println("migrate error:", str, err)
 	} else {
 		log.Println("Migrated", vm.Name, "to", toHost)
+	}
+}
+
+//shutdown guest
+func (vm *Vm) Shutdown() {
+	log.Println("Shutting down", vm.Name, "on", vm.Host, "...")
+	var cmd []string = []string{"shutdown " + vm.Name}
+	str, err := functions.ExecShell("virsh", cmd)
+	if err != nil {
+		log.Println("Shutdown error:", str, err)
+	} else {
+		log.Println("Shut down", vm.Name, "on", vm.Host)
 	}
 }
 
@@ -54,22 +72,29 @@ func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
 
 //migrate vm from this to dest.server
 func (h *Hypervisor) MigrateVm(par string, reply *string) error {
-	// log.Println("in hypervisor.migratevm method")
 	var pars []string = strings.Fields(par)
 	if len(pars) != 2 {
 		return errors.New("invalid parameters")
 	}
 	var vmName = pars[0]
 	var toHost = pars[1]
-	// log.Println("migrate parameters vmName:", vmName, ", toHost:", toHost)
 	vm, err := FindVm(vmName)
 	if err != nil {
-		// log.Println("findvm function returned error")
 		return err
 	}
-	// log.Println("found vm:", vm)
 	go vm.Migrate(toHost)
 	*reply = "migrate job started"
+	return nil
+}
+
+//shutting down vm on this server
+func (h *Hypervisor) ShutdownVm(vmName string, reply *string) error {
+	vm, err := FindVm(vmName)
+	if err != nil {
+		return err
+	}
+	go vm.Shutdown()
+	*reply = "shutdown job started"
 	return nil
 }
 
