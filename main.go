@@ -61,7 +61,12 @@ func printHelp() {
 }
 
 func migrate(vmName string, toServer string) {
-	log.Println("migrate", vmName, "to", toServer)
+	log.Println("migrating", vmName, "to", toServer)
+	str, err := server.MigrateVm(vmName, toServer)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(str)
 }
 
 func wake(hostname string) {
