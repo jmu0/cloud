@@ -26,17 +26,15 @@ type Vm struct {
 	ImagePath string
 }
 
-func (vm *Vm) Migrate(toHost string) error {
-	log.Println("in vm.migrate method")
+func (vm *Vm) Migrate(toHost string) {
+	// log.Println("in vm.migrate method")
 	var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
 	log.Println("command: virsh", cmd[0])
 	str, err := functions.ExecShell("virsh", cmd)
-	log.Println(str, err)
+	// log.Println(str, err)
 	if err != nil {
-		log.Println("migrate:", err)
-		return err
+		log.Println("migrate error:", str, err)
 	}
-	return nil
 }
 
 type Hypervisor struct{}
@@ -53,27 +51,23 @@ func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
 
 //migrate vm from this to dest.server
 func (h *Hypervisor) MigrateVm(par string, reply *string) error {
-	log.Println("in hypervisor.migratevm method")
+	// log.Println("in hypervisor.migratevm method")
 	var pars []string = strings.Fields(par)
 	if len(pars) != 2 {
 		return errors.New("invalid parameters")
 	}
 	var vmName = pars[0]
 	var toHost = pars[1]
-	log.Println("migrate parameters vmName:", vmName, ", toHost:", toHost)
+	// log.Println("migrate parameters vmName:", vmName, ", toHost:", toHost)
 	vm, err := FindVm(vmName)
 	if err != nil {
-		log.Println("findvm function returned error")
+		// log.Println("findvm function returned error")
 		return err
 	}
-	log.Println("found vm:", vm)
-	err = vm.Migrate(toHost)
-	if err == nil {
-		*reply = "migrate job started"
-	} else {
-		*reply = "error starting migrate job"
-	}
-	return err
+	// log.Println("found vm:", vm)
+	go vm.Migrate(toHost)
+	*reply = "migrate job started"
+	return nil
 }
 
 //List vms on this server
