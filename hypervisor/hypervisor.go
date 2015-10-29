@@ -61,7 +61,7 @@ func (vm *Vm) Shutdown() {
 //destroy guest
 func (vm *Vm) Destroy() {
 	log.Println("Destroying ", vm.Name, "on", vm.Host, "...")
-	var cmd []string = []string{"destroy" + vm.Name}
+	var cmd []string = []string{"destroy " + vm.Name}
 	str, err := functions.ExecShell("virsh", cmd)
 	if err != nil {
 		log.Println("Destroy error:", str, err)
