@@ -29,11 +29,13 @@ type Vm struct {
 func (vm *Vm) Migrate(toHost string) {
 	// log.Println("in vm.migrate method")
 	var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
-	log.Println("command: virsh", cmd[0])
+	// log.Println("command: virsh", cmd[0])
 	str, err := functions.ExecShell("virsh", cmd)
 	// log.Println(str, err)
 	if err != nil {
 		log.Println("migrate error:", str, err)
+	} else {
+		log.Println("Migrating", vm.Name, " to ", toHost)
 	}
 }
 

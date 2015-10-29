@@ -81,8 +81,11 @@ func wake(hostname string) {
 func test() {
 	fmt.Println("Test")
 
-	fmt.Println("migrate test")
-	migrate("zoneminder", "server2")
+	/*
+		fmt.Println("migrate test")
+		migrate("zoneminder", "server2")
+	*/
+
 	/*
 		fmt.Println("list vms on nuc")
 		lst, err := server.GetVmListFromServer("nuc")
