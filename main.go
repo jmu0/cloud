@@ -84,6 +84,15 @@ func routeCommand(args []string) {
 			} else {
 				log.Fatal("Invalid arguments")
 			}
+		} else if args[0] == "settings" {
+			s, err := functions.GetSettings()
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Settings in /etc/cloud.conf:")
+			for k, v := range s {
+				fmt.Println(k, "=", v)
+			}
 		} else if args[0] == "test" {
 			test()
 		} else {

@@ -24,7 +24,7 @@ func ExecShell(cmd string, args []string) (string, error) {
 	sh.Stderr = &errString
 	err := sh.Run()
 	if err != nil || len(errString.String()) > 0 {
-		errStr := "Error in command: " + errString.String()
+		errStr := "Error in command: " + errString.String() + "(command: " + cmd + ")"
 		return "", errors.New(errStr)
 	}
 	return out.String(), nil
@@ -77,29 +77,27 @@ func WriteFile(path string, contents string) error {
 func GetSettings() (map[string]string, error) {
 	str, err := ReadFile("/etc/cloud.conf")
 	if err != nil {
-		// log.Fatal(err)
 		return make(map[string]string), errors.New("no settings file /etc/cloud.conf")
 	}
 	settings := map[string]string{}
 	lines := strings.Split(str, "\n")
-	// log.Println("lines:", lines)
 	if len(lines) > 0 {
 		for _, line := range lines {
-			fields := strings.Fields(line)
-			// log.Println("fields:", fields)
-			if len(fields) > 1 {
-				settings[fields[0]] = strings.Join(fields[1:], " ")
+			if len(line) > 0 && line[:1] != "#" {
+				fields := strings.Fields(line)
+				if len(fields) > 1 {
+					settings[fields[0]] = strings.Join(fields[1:], " ")
+				}
 			}
 		}
 	}
-	// log.Println("settings:", settings)
 	return settings, nil
 }
 
 //get default port for rpc server
 //get from settings file or return default
 func GetServerPort() string {
-	var def string = ":8888"
+	var def string = ":7777"
 	settings, err := GetSettings()
 	if err != nil {
 		return def
