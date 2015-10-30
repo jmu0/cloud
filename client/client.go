@@ -80,6 +80,25 @@ func GetShareListFromServer(Host string) ([]storage.Share, error) {
 	return *result, nil
 }
 
+//get mount list from socket
+func GetMountListFromServer(Host string) ([]storage.Mount, error) {
+	// log.Println("GetMountListFromServer")
+	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
+	if err != nil {
+		// log.Println("rpc connection error")
+		return []storage.Mount{}, err
+	}
+	result := new([]storage.Mount)
+	err = c.Call("Storage.GetMounts", "", result)
+	if err != nil {
+		// log.Println("rpc call error")
+		return []storage.Mount{}, err
+	}
+	// log.Printf("result type: %T", result)
+	// log.Println("result:", result)
+	return *result, nil
+}
+
 //Returns ip addresses of servers
 func ScanNetwork() ([]string, error) {
 	timeout := time.Microsecond * 500
@@ -126,6 +145,25 @@ func GetCloudShareList() ([]storage.Share, error) {
 		if err != nil {
 			// log.Println("error while getting share list for", ip, err)
 			return []storage.Share{}, err
+		}
+		lst = append(lst, vml...)
+	}
+	return lst, nil
+}
+
+//get list of mounts from cloud servers
+func GetCloudMountList() ([]storage.Mount, error) {
+	lst := []storage.Mount{}
+	ips, err := ScanNetwork()
+	if err != nil {
+		// log.Println("error during network scan", err)
+		return []storage.Mount{}, err
+	}
+	for _, ip := range ips {
+		vml, err := GetMountListFromServer(ip)
+		if err != nil {
+			// log.Println("error while getting share list for", ip, err)
+			return []storage.Mount{}, err
 		}
 		lst = append(lst, vml...)
 	}

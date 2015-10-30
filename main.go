@@ -30,6 +30,8 @@ func routeCommand(args []string) {
 			printVmList()
 		} else if args[0] == "shares" {
 			printShareList()
+		} else if args[0] == "mounts" {
+			printMountList()
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				hostname := args[1]
@@ -109,6 +111,7 @@ func routeCommand(args []string) {
 
 func test() {
 	fmt.Println("Test")
+	printMountList()
 	/*
 		sh, err := storage.GetShares()
 
@@ -341,6 +344,91 @@ func printShareList() error {
 		line += s.Name + " "
 		line += s.Path + " "
 		line += s.Host + " "
+		fmt.Println(line)
+	}
+	fmt.Println("")
+	return nil
+}
+func printMountList() error {
+	lst, err := client.GetCloudMountList()
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Get field lengths
+	fields := map[string]int{
+		"Name":  4,
+		"Share": 5,
+		// "SharePath":  9,
+		// "ShareHost":  9,
+		"MountHost":  9,
+		"MountPoint": 10,
+	}
+	for _, s := range lst {
+		if fields["Name"] < len(s.Name) {
+			fields["Name"] = len(s.Name)
+		}
+		if fields["Share"] < len(s.Share) {
+			fields["Share"] = len(s.Share)
+		}
+		// if fields["SharePath"] < len(s.SharePath) {
+		// 	fields["SharePath"] = len(s.SharePath)
+		// }
+		// if fields["ShareHost"] < len(s.ShareHost) {
+		// 	fields["ShareHost"] = len(s.ShareHost)
+		// }
+		if fields["MountPoint"] < len(s.MountPoint) {
+			fields["MountPoint"] = len(s.MountPoint)
+		}
+		if fields["MountHost"] < len(s.MountHost) {
+			fields["MountHost"] = len(s.MountHost)
+		}
+	}
+	//headers
+	var line string = ""
+	var tmp string = ""
+	fmt.Println("")
+	tmp = "Name"
+	makeLength(&tmp, fields["Name"])
+	line += tmp + " "
+	tmp = "Share"
+	makeLength(&tmp, fields["Share"])
+	line += tmp + " "
+	// tmp = "SharePath"
+	// makeLength(&tmp, fields["SharePath"])
+	// line += tmp + " "
+	// tmp = "ShareHost"
+	// makeLength(&tmp, fields["ShareHost"])
+	// line += tmp + " "
+	tmp = "MountHost"
+	makeLength(&tmp, fields["MountHost"])
+	line += tmp + " "
+	tmp = "MountPoint"
+	makeLength(&tmp, fields["MountPoint"])
+	line += tmp
+	fmt.Println(line)
+
+	//underline
+	for i := 0; i < len(line); i++ {
+		fmt.Printf("-")
+
+	}
+	fmt.Printf("\n")
+	//table
+	for _, s := range lst {
+		line = ""
+		makeLength(&s.Name, fields["Name"])
+		makeLength(&s.Share, fields["Share"])
+		// makeLength(&s.SharePath, fields["SharePath"])
+		// makeLength(&s.ShareHost, fields["ShareHost"])
+		makeLength(&s.MountHost, fields["MountHost"])
+		makeLength(&s.MountPoint, fields["MountPoint"])
+
+		line += s.Name + " "
+		line += s.Share + " "
+		// line += s.SharePath + " "
+		// line += s.ShareHost + " "
+		line += s.MountHost
+		line += s.MountPoint + " "
 		fmt.Println(line)
 	}
 	fmt.Println("")
