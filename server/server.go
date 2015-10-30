@@ -30,7 +30,6 @@ func (srv *Server) Ping(par string, reply *string) error {
 
 //return server properties
 func (srv *Server) Properties(par string, reply *Server) error {
-	// log.Println("Server.Properties")
 	var err error
 	reply.Hostname, err = functions.GetLocalhostName()
 	if err != nil {
@@ -57,7 +56,6 @@ func (srv *Server) Properties(par string, reply *Server) error {
 		log.Println(err)
 		return err
 	}
-	// log.Println(reply)
 	return nil
 }
 

@@ -28,7 +28,6 @@ type Vm struct {
 
 //migrate guest
 func (vm *Vm) Migrate(toHost string) {
-	// log.Println("in vm.migrate method")
 	log.Println("Migrating", vm.Name, "to", toHost, "...")
 	/*
 		in /etc/libvirt/libvirtd.conf:
@@ -36,9 +35,7 @@ func (vm *Vm) Migrate(toHost string) {
 			tcp_port = "16509"
 	*/
 	var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
-	// log.Println("command: virsh", cmd[0])
 	str, err := functions.ExecShell("virsh", cmd)
-	// log.Println(str, err)
 	if err != nil {
 		log.Println("migrate error:", str, err)
 	} else {
@@ -74,7 +71,6 @@ type Hypervisor struct{}
 
 //rpc method
 func (h *Hypervisor) VmList(par string, reply *[]Vm) error {
-	//TODO do i need 2 functions??
 	err := VmList(reply)
 	if err != nil {
 		return err

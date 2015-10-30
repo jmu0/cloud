@@ -5,7 +5,7 @@ import (
 	"cloud/functions"
 	"cloud/hypervisor"
 	"cloud/server"
-	// "cloud/storage"
+	"cloud/storage"
 	"fmt"
 	"log"
 	"os"
@@ -32,6 +32,28 @@ func routeCommand(args []string) {
 			printShareList()
 		} else if args[0] == "mounts" {
 			printMountList()
+		} else if args[0] == "share" {
+			if len(args) == 2 {
+				s, err := storage.CreateShare(args[1])
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println("share created:", s.Path)
+			} else {
+				log.Fatal("Invalid arguments")
+			}
+		} else if args[0] == "mount" {
+			if len(args) == 2 {
+				_, err := client.MountShare(args[1])
+				if err != nil {
+					log.Fatal(err)
+				} else {
+					log.Println(args[1], "mounted")
+				}
+			} else {
+				log.Fatal("Invalid arguments")
+			}
+
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				hostname := args[1]
@@ -111,7 +133,9 @@ func routeCommand(args []string) {
 
 func test() {
 	fmt.Println("Test")
-	printMountList()
+	// fmt.Println(storage.CreateShare("/home/jos/tmp"))
+	// fmt.Println(storage.CreateShare("/nfs/share"))
+
 	/*
 		sh, err := storage.GetShares()
 
@@ -427,8 +451,8 @@ func printMountList() error {
 		line += s.Share + " "
 		// line += s.SharePath + " "
 		// line += s.ShareHost + " "
-		line += s.MountHost
-		line += s.MountPoint + " "
+		line += s.MountHost + " "
+		line += s.MountPoint
 		fmt.Println(line)
 	}
 	fmt.Println("")

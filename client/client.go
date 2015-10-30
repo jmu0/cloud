@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/rpc"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -44,58 +45,43 @@ func GetPropertiesFromServer(Host string) (server.Server, error) {
 
 //get vm list from socket
 func GetVmListFromServer(Host string) ([]hypervisor.Vm, error) {
-	// log.Println("GetVmListFromServer")
 	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
 	if err != nil {
-		// log.Println("rpc connection error")
 		return []hypervisor.Vm{}, err
 	}
 	result := new([]hypervisor.Vm)
 	err = c.Call("Hypervisor.VmList", "", result)
 	if err != nil {
-		// log.Println("rpc call error")
 		return []hypervisor.Vm{}, err
 	}
-	// log.Printf("result type: %T", result)
-	// log.Println("result:", result)
 	return *result, nil
 }
 
 //get share list from socket
 func GetShareListFromServer(Host string) ([]storage.Share, error) {
-	// log.Println("GetShareListFromServer")
 	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
 	if err != nil {
-		// log.Println("rpc connection error")
 		return []storage.Share{}, err
 	}
 	result := new([]storage.Share)
 	err = c.Call("Storage.GetShares", "", result)
 	if err != nil {
-		// log.Println("rpc call error")
 		return []storage.Share{}, err
 	}
-	// log.Printf("result type: %T", result)
-	// log.Println("result:", result)
 	return *result, nil
 }
 
 //get mount list from socket
 func GetMountListFromServer(Host string) ([]storage.Mount, error) {
-	// log.Println("GetMountListFromServer")
 	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
 	if err != nil {
-		// log.Println("rpc connection error")
 		return []storage.Mount{}, err
 	}
 	result := new([]storage.Mount)
 	err = c.Call("Storage.GetMounts", "", result)
 	if err != nil {
-		// log.Println("rpc call error")
 		return []storage.Mount{}, err
 	}
-	// log.Printf("result type: %T", result)
-	// log.Println("result:", result)
 	return *result, nil
 }
 
@@ -118,7 +104,6 @@ func GetCloudVmList() ([]hypervisor.Vm, error) {
 	lst := []hypervisor.Vm{}
 	ips, err := ScanNetwork()
 	if err != nil {
-		// log.Println("error during network scan", err)
 		return []hypervisor.Vm{}, err
 	}
 	for _, ip := range ips {
@@ -137,13 +122,11 @@ func GetCloudShareList() ([]storage.Share, error) {
 	lst := []storage.Share{}
 	ips, err := ScanNetwork()
 	if err != nil {
-		// log.Println("error during network scan", err)
 		return []storage.Share{}, err
 	}
 	for _, ip := range ips {
 		vml, err := GetShareListFromServer(ip)
 		if err != nil {
-			// log.Println("error while getting share list for", ip, err)
 			return []storage.Share{}, err
 		}
 		lst = append(lst, vml...)
@@ -156,13 +139,11 @@ func GetCloudMountList() ([]storage.Mount, error) {
 	lst := []storage.Mount{}
 	ips, err := ScanNetwork()
 	if err != nil {
-		// log.Println("error during network scan", err)
 		return []storage.Mount{}, err
 	}
 	for _, ip := range ips {
 		vml, err := GetMountListFromServer(ip)
 		if err != nil {
-			// log.Println("error while getting share list for", ip, err)
 			return []storage.Mount{}, err
 		}
 		lst = append(lst, vml...)
@@ -198,6 +179,24 @@ func FindServer(serverName string) (server.Server, error) {
 	return server.Server{}, errors.New("Server " + serverName + " not found.")
 }
 
+//find share in cloud
+func FindShare(share string) (storage.Share, error) {
+	lst, err := GetCloudShareList()
+	if err != nil {
+		return storage.Share{}, err
+	}
+	split := strings.Split(share, ":")
+	if len(split) != 2 {
+		return storage.Share{}, errors.New("invalid share: " + share)
+	}
+	for _, s := range lst {
+		if s.Host == split[0] && s.Path == split[1] {
+			return s, nil
+		}
+	}
+	return storage.Share{}, errors.New("Share " + share + " not found.")
+}
+
 //get list of servers/properties
 func GetCloudServers() ([]server.Server, error) {
 	lst := []server.Server{}
@@ -210,16 +209,26 @@ func GetCloudServers() ([]server.Server, error) {
 		srv, err := GetPropertiesFromServer(ip)
 		if err != nil {
 			log.Println("error while getting properties for", ip, err)
-			// return []Server{}, err
 		}
 		lst = append(lst, srv)
 	}
 	return lst, nil
 }
 
+//mount share
+func MountShare(share string) (string, error) {
+	var shareString string
+	onServer, _ := functions.GetLocalhostName()
+	split := strings.Split(share, "@")
+	shareString = split[0]
+	if len(split) == 2 {
+		onServer = split[1]
+	}
+	return GetStringFromServer(onServer, "Storage.MountShare", shareString)
+}
+
 //send migrate job to server where vm is running
 func MigrateVm(vmName string, toServer string) (string, error) {
-	//check if vm exists
 	vm, err := FindVm(vmName)
 	if err != nil {
 		return "", err
@@ -239,7 +248,6 @@ func MigrateVm(vmName string, toServer string) (string, error) {
 
 //find vm and shut down
 func ShutdownVm(vmName string) (string, error) {
-	//check if vm exists
 	vm, err := FindVm(vmName)
 	if err != nil {
 		return "", err
@@ -249,7 +257,6 @@ func ShutdownVm(vmName string) (string, error) {
 
 //find vm and shut down
 func DestroyVm(vmName string) (string, error) {
-	//check if vm exists
 	vm, err := FindVm(vmName)
 	if err != nil {
 		return "", err
@@ -280,8 +287,7 @@ type MacAddress struct {
 	Mac      string
 }
 
-//Wake server
-//Get mac addresses from mac.json file
+//Wake server. Get mac addresses from mac.json file
 func Wake(hostname string) (string, error) {
 	//find out which command
 	cmd, err := functions.ExecShell("which", []string{"wol"})

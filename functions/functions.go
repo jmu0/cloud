@@ -83,6 +83,20 @@ func WriteFile(path string, contents string) error {
 	return nil
 }
 
+//append to file
+func AppendToFile(path string, content string) error {
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_APPEND, 0660)
+	defer f.Close()
+	if err != nil {
+		return err
+	}
+	_, err = f.WriteString(content)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //Get settings from json file
 func GetSettings() (map[string]string, error) {
 	str, err := ReadFile("/etc/cloud.conf")
@@ -118,4 +132,12 @@ func GetServerPort() string {
 		return port
 	}
 	return def
+}
+
+//check if path exists
+func PathExists(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
