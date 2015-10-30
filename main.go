@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cloud/client"
 	"cloud/functions"
 	"cloud/hypervisor"
 	"cloud/server"
@@ -10,11 +11,11 @@ import (
 )
 
 func main() {
-	route(os.Args[1:])
+	routeCommand(os.Args[1:])
 }
 
 //Route command from args
-func route(args []string) {
+func routeCommand(args []string) {
 	//Routing command
 	if len(args) > 0 {
 		if args[0] == "run" {
@@ -28,27 +29,58 @@ func route(args []string) {
 			printVmList()
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
-				wake(args[1])
+				hostname := args[1]
+				str, err := client.Wake(hostname)
+				if err != nil {
+					log.Fatal(err)
+				} else {
+					fmt.Println(str)
+				}
 			} else {
 				log.Fatal("Invalid arguments")
 			}
 		} else if args[0] == "migrate" {
 			if len(args) == 3 {
-				migrate(args[1], args[2])
+				vmName := args[1]
+				toServer := args[2]
+				log.Println("migrating", vmName, "to", toServer)
+				str, err := client.MigrateVm(vmName, toServer)
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(str)
 			} else if len(args) == 4 && args[1] == "all" {
-				migrateAll(args[2], args[3])
+				fromServer := args[2]
+				toServer := args[3]
+				log.Println("migrating all vm's from", fromServer, "to", toServer)
+				err := client.MigrateAll(fromServer, toServer)
+				if err != nil {
+					log.Fatal(err)
+				}
 			} else {
 				log.Fatal("Invalid arguments")
 			}
 		} else if args[0] == "shutdown" {
 			if len(args) == 2 {
-				shutdown(args[1])
+				vmName := args[1]
+				log.Println("shutting down ", vmName)
+				str, err := client.ShutdownVm(vmName)
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(str)
 			} else {
 				log.Fatal("Invalid arguments")
 			}
 		} else if args[0] == "destroy" {
 			if len(args) == 2 {
-				destroy(args[1])
+				vmName := args[1]
+				log.Println("destroying", vmName)
+				str, err := client.DestroyVm(vmName)
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(str)
 			} else {
 				log.Fatal("Invalid arguments")
 			}
@@ -63,95 +95,8 @@ func route(args []string) {
 	}
 }
 
-func migrate(vmName string, toServer string) {
-	log.Println("migrating", vmName, "to", toServer)
-	str, err := server.MigrateVm(vmName, toServer)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(str)
-}
-
-func migrateAll(fromServer string, toServer string) {
-	log.Println("migrating all vm's from", fromServer, "to", toServer)
-	err := server.MigrateAll(fromServer, toServer)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func shutdown(vmName string) {
-	log.Println("shutting down ", vmName)
-	str, err := server.ShutdownVm(vmName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(str)
-}
-func destroy(vmName string) {
-	log.Println("destroying", vmName)
-	str, err := server.DestroyVm(vmName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(str)
-}
-
-func wake(hostname string) {
-	str, err := functions.Wake(hostname)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Println(str)
-	}
-}
-
 func test() {
 	fmt.Println("Test")
-
-	/*
-		fmt.Println("migrate test")
-		migrate("zoneminder", "server2")
-	*/
-
-	/*
-		fmt.Println("list vms on nuc")
-		lst, err := server.GetVmListFromServer("nuc")
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(lst)
-	*/
-
-	/*
-		var val server.Server
-		var err error
-		host, _ := functions.GetLocalhostName()
-		val, err = server.GetPropertiesFromServer(host)
-		if err == nil {
-			log.Println("value:", val)
-			log.Fatal(err)
-		}
-		log.Println("data from server:", val)
-	*/
-
-	/*
-		name, _ := f.GetLocalhostName()
-		fmt.Println("hostname:", name)
-		ip, err := f.GetIP(name)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("ip address:", ip)
-	*/
-
-	// res, err := f.ExecShell("ls", []string{"/home/jos"})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(res)
-
-	// go server.Serve()
 }
 
 //print help from help.txt file
@@ -167,7 +112,7 @@ func printHelp() {
 //Prints list of servers
 func printServerList() error {
 	//get servers
-	lst, err := server.GetCloudServers()
+	lst, err := client.GetCloudServers()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -241,7 +186,7 @@ func printServerList() error {
 
 //Print list of vms in cloud
 func printVmList() error {
-	lst, err := server.GetCloudVmList()
+	lst, err := client.GetCloudVmList()
 	if err != nil {
 		fmt.Println(err)
 	}

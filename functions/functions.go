@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	// "log"
 	// "cloud/server"
-	"encoding/json"
+	// "encoding/json"
 	"errors"
 	"net"
 	"os"
@@ -73,63 +73,6 @@ func WriteFile(path string, contents string) error {
 	return nil
 }
 
-type MacAddress struct {
-	Hostname string
-	Mac      string
-}
-
-//Wake server
-//Get mac addresses from mac.json file
-func Wake(hostname string) (string, error) {
-	//find out which command
-	cmd, err := ExecShell("which", []string{"wol"})
-	if err != nil {
-		return "", err
-	}
-	if len(cmd) > 0 {
-		cmd = "wol"
-	} else {
-		cmd, err := ExecShell("which", []string{"wakeonlan"})
-		if err != nil {
-			return "", err
-		}
-		if len(cmd) > 0 {
-			cmd = "wakeonlan"
-		} else {
-			return "", errors.New("No wake-on-lan package installed")
-		}
-	}
-	//find mac address
-	settings, err := GetSettings()
-	if err != nil {
-		return "", err
-	}
-	var path string
-	var ok bool
-	if path, ok = settings["macfile"]; !ok {
-		return "", errors.New("no  macfile in settings")
-	}
-	str, err := ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	lst := []MacAddress{}
-	err = json.Unmarshal([]byte(str), &lst)
-	if err != nil {
-		return "", err
-	}
-	for _, a := range lst {
-		if a.Hostname == hostname {
-			str, err = ExecShell(cmd, []string{a.Mac})
-			if err != nil {
-				return "", err
-			}
-			return str, nil
-		}
-	}
-	return "", errors.New("No mac address found for hostname: " + hostname)
-}
-
 //Get settings from json file
 func GetSettings() (map[string]string, error) {
 	str, err := ReadFile("/etc/cloud.conf")
@@ -151,4 +94,20 @@ func GetSettings() (map[string]string, error) {
 	}
 	// log.Println("settings:", settings)
 	return settings, nil
+}
+
+//get default port for rpc server
+//get from settings file or return default
+func GetServerPort() string {
+	var def string = ":8888"
+	settings, err := GetSettings()
+	if err != nil {
+		return def
+	}
+	if port, ok := settings["port"]; !ok {
+		return def
+	} else {
+		return port
+	}
+	return def
 }
