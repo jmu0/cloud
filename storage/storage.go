@@ -113,15 +113,14 @@ func GetMounts() ([]Mount, error) {
 	mounts := []Mount{}
 	// txt, err := functions.ExecShell("df", []string{"-h -T -t nfs -t nfs4"})
 	txt, err := functions.ExecShell("df", []string{"-h", "-t", "nfs", "-t", "nfs4"})
-	if err != nil {
-		return []Mount{}, err
-	}
-	lines := strings.Split(txt, "\n")
-	for _, l := range lines[1:] {
-		if len(l) > 0 {
-			m := Mount{}
-			m.FromLine(l)
-			mounts = append(mounts, m)
+	if err == nil {
+		lines := strings.Split(txt, "\n")
+		for _, l := range lines[1:] {
+			if len(l) > 0 {
+				m := Mount{}
+				m.FromLine(l)
+				mounts = append(mounts, m)
+			}
 		}
 	}
 	return mounts, nil
