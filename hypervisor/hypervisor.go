@@ -10,7 +10,7 @@ import (
 func IsHypervisor() (bool, error) {
 	res, err := functions.ExecShell("which", []string{"virsh"})
 	if err != nil {
-		return false, err
+		return false,nil 
 	} else {
 		if len(res) > 0 {
 			return true, nil

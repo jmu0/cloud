@@ -24,7 +24,8 @@ func ExecShell(cmd string, args []string) (string, error) {
 	sh.Stderr = &errString
 	err := sh.Run()
 	if err != nil || len(errString.String()) > 0 {
-		errStr := "Error in command: " + errString.String() + "(command: " + cmd + ")"
+		errStr := "Error in command: " + errString.String()
+                errStr += "(command: " + cmd + " " + strings.Join(args, " ") + ")"
 		return "", errors.New(errStr)
 	}
 	return out.String(), nil
