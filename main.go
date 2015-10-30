@@ -5,7 +5,7 @@ import (
 	"cloud/functions"
 	"cloud/hypervisor"
 	"cloud/server"
-	"cloud/storage"
+	// "cloud/storage"
 	"fmt"
 	"log"
 	"os"
@@ -109,12 +109,20 @@ func routeCommand(args []string) {
 
 func test() {
 	fmt.Println("Test")
-	sh, err := storage.GetShares()
+	/*
+		sh, err := storage.GetShares()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(sh)
+		fmt.Println(sh[1].ToLine())
+	*/
+	sh, err := client.GetCloudShareList()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(sh)
-	fmt.Println(sh[1].ToLine())
 }
 
 //print help from help.txt file

@@ -75,8 +75,8 @@ func GetShareListFromServer(Host string) ([]storage.Share, error) {
 		log.Println("rpc call error")
 		return []storage.Share{}, err
 	}
-	log.Printf("result type: %T", result)
-	log.Println("result:", result)
+	// log.Printf("result type: %T", result)
+	// log.Println("result:", result)
 	return *result, nil
 }
 
@@ -124,7 +124,7 @@ func GetCloudShareList() ([]storage.Share, error) {
 	for _, ip := range ips {
 		vml, err := GetShareListFromServer(ip)
 		if err != nil {
-			log.Println("error while getting vmlist for", ip, err)
+			log.Println("error while getting share list for", ip, err)
 			return []storage.Share{}, err
 		}
 		lst = append(lst, vml...)
@@ -193,11 +193,10 @@ func MigrateVm(vmName string, toServer string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if to.IsHypervisor {
-		return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
-	} else {
+	if !to.IsHypervisor {
 		return "", errors.New(toServer + " is not a hypervisor")
 	}
+	return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
 }
 
 //find vm and shut down
