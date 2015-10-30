@@ -25,7 +25,7 @@ func ExecShell(cmd string, args []string) (string, error) {
 	err := sh.Run()
 	if err != nil || len(errString.String()) > 0 {
 		errStr := "Error in command: " + errString.String()
-                errStr += "(command: " + cmd + " " + strings.Join(args, " ") + ")"
+		errStr += "(command: " + cmd + " " + strings.Join(args, " ") + ")"
 		return "", errors.New(errStr)
 	}
 	return out.String(), nil
@@ -47,6 +47,15 @@ func GetIP(hostName string) (string, error) {
 		return "", err
 	}
 	return ip[0], nil
+}
+
+//lookup hostname for ip
+func GetHostname(ip string) (string, error) {
+	names, err := net.LookupAddr(ip)
+	if err != nil {
+		return "", err
+	}
+	return names[0], nil
 }
 
 //read file into string

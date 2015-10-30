@@ -4,6 +4,7 @@ import (
 	"cloud/functions"
 	"cloud/hypervisor"
 	"cloud/server"
+	"cloud/storage"
 	"encoding/json"
 	"errors"
 	"log"
@@ -60,6 +61,25 @@ func GetVmListFromServer(Host string) ([]hypervisor.Vm, error) {
 	return *result, nil
 }
 
+//get share list from socket
+func GetShareListFromServer(Host string) ([]storage.Share, error) {
+	log.Println("GetShareListFromServer")
+	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
+	if err != nil {
+		log.Println("rpc connection error")
+		return []storage.Share{}, err
+	}
+	result := new([]storage.Share)
+	err = c.Call("Storage.GetShares", "", result)
+	if err != nil {
+		log.Println("rpc call error")
+		return []storage.Share{}, err
+	}
+	log.Printf("result type: %T", result)
+	log.Println("result:", result)
+	return *result, nil
+}
+
 //Returns ip addresses of servers
 func ScanNetwork() ([]string, error) {
 	timeout := time.Microsecond * 500
@@ -86,7 +106,26 @@ func GetCloudVmList() ([]hypervisor.Vm, error) {
 		vml, err := GetVmListFromServer(ip)
 		if err != nil {
 			// log.Println("error while getting vmlist for", ip, err)
-			// return []Server{}, err
+			return []hypervisor.Vm{}, err
+		}
+		lst = append(lst, vml...)
+	}
+	return lst, nil
+}
+
+//get list of shares from cloud servers
+func GetCloudShareList() ([]storage.Share, error) {
+	lst := []storage.Share{}
+	ips, err := ScanNetwork()
+	if err != nil {
+		log.Println("error during network scan", err)
+		return []storage.Share{}, err
+	}
+	for _, ip := range ips {
+		vml, err := GetShareListFromServer(ip)
+		if err != nil {
+			log.Println("error while getting vmlist for", ip, err)
+			return []storage.Share{}, err
 		}
 		lst = append(lst, vml...)
 	}
@@ -105,7 +144,20 @@ func FindVm(vmName string) (hypervisor.Vm, error) {
 		}
 	}
 	return hypervisor.Vm{}, errors.New("Vm " + vmName + " not found.")
+}
 
+//find server in cloud
+func FindServer(serverName string) (server.Server, error) {
+	lst, err := GetCloudServers()
+	if err != nil {
+		return server.Server{}, err
+	}
+	for _, v := range lst {
+		if v.Hostname == serverName {
+			return v, nil
+		}
+	}
+	return server.Server{}, errors.New("Server " + serverName + " not found.")
 }
 
 //get list of servers/properties
@@ -137,7 +189,15 @@ func MigrateVm(vmName string, toServer string) (string, error) {
 	if vm.Host == toServer {
 		return "", errors.New(vmName + " is already running on " + toServer)
 	}
-	return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
+	to, err := FindServer(toServer)
+	if err != nil {
+		return "", err
+	}
+	if to.IsHypervisor {
+		return GetStringFromServer(vm.Host, "Hypervisor.MigrateVm", vmName+" "+toServer)
+	} else {
+		return "", errors.New(toServer + " is not a hypervisor")
+	}
 }
 
 //find vm and shut down

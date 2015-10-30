@@ -65,6 +65,7 @@ func (srv *Server) Properties(par string, reply *Server) error {
 func Serve() error {
 	rpc.Register(new(Server))
 	rpc.Register(new(hypervisor.Hypervisor))
+	rpc.Register(new(storage.Storage))
 	port := functions.GetServerPort()
 	ln, err := net.Listen("tcp", port)
 	log.Println("listening on port", port)

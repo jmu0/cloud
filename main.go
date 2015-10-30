@@ -5,6 +5,7 @@ import (
 	"cloud/functions"
 	"cloud/hypervisor"
 	"cloud/server"
+	"cloud/storage"
 	"fmt"
 	"log"
 	"os"
@@ -27,6 +28,8 @@ func routeCommand(args []string) {
 			printServerList()
 		} else if args[0] == "vmlist" {
 			printVmList()
+		} else if args[0] == "shares" {
+			printShareList()
 		} else if args[0] == "wake" {
 			if len(args) == 2 {
 				hostname := args[1]
@@ -106,12 +109,28 @@ func routeCommand(args []string) {
 
 func test() {
 	fmt.Println("Test")
+	sh, err := storage.GetShares()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(sh)
+	fmt.Println(sh[1].ToLine())
 }
 
 //print help from help.txt file
 func printHelp() {
-	//TODO path to helpfile in settings
-	help, err := functions.ReadFile("help.txt")
+	//find path
+	settings, err := functions.GetSettings()
+	if err != nil {
+		log.Println(err)
+	}
+	var path string
+	var ok bool
+	if path, ok = settings["helpfile"]; !ok {
+		log.Println("no path to helpfile in settings")
+		path = "help.txt"
+	}
+	help, err := functions.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -242,6 +261,7 @@ func printVmList() error {
 		fmt.Printf("-")
 
 	}
+	//table
 	fmt.Printf("\n")
 	for _, vm := range lst {
 		line = ""
@@ -253,6 +273,64 @@ func printVmList() error {
 		line += vm.Host + " "
 		line += vm.State + " "
 		line += vm.ImagePath + " "
+		fmt.Println(line)
+	}
+	fmt.Println("")
+	return nil
+}
+
+//Print list of shares in cloud
+func printShareList() error {
+	lst, err := client.GetCloudShareList()
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Get field lengths
+	fields := map[string]int{
+		"Name": 0,
+		"Path": 0,
+		"Host": 0,
+	}
+	for _, s := range lst {
+		if fields["Name"] < len(s.Name) {
+			fields["Name"] = len(s.Name)
+		}
+		if fields["Path"] < len(s.Path) {
+			fields["Path"] = len(s.Path)
+		}
+		if fields["Host"] < len(s.Host) {
+			fields["Host"] = len(s.Host)
+		}
+	}
+	//headers
+	var line string = ""
+	var tmp string = ""
+	fmt.Println("")
+	tmp = "Name"
+	makeLength(&tmp, fields["Name"])
+	line += tmp + " "
+	tmp = "Path"
+	makeLength(&tmp, fields["Path"])
+	line += tmp + " "
+	tmp = "Host"
+	makeLength(&tmp, fields["Host"])
+	line += tmp
+	fmt.Println(line)
+	//underline
+	for i := 0; i < len(line); i++ {
+		fmt.Printf("-")
+
+	}
+	fmt.Printf("\n")
+	//table
+	for _, s := range lst {
+		line = ""
+		makeLength(&s.Name, fields["Name"])
+		makeLength(&s.Path, fields["Path"])
+		makeLength(&s.Host, fields["Host"])
+		line += s.Name + " "
+		line += s.Path + " "
+		line += s.Host + " "
 		fmt.Println(line)
 	}
 	fmt.Println("")
