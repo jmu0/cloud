@@ -63,16 +63,16 @@ func GetVmListFromServer(Host string) ([]hypervisor.Vm, error) {
 
 //get share list from socket
 func GetShareListFromServer(Host string) ([]storage.Share, error) {
-	log.Println("GetShareListFromServer")
+	// log.Println("GetShareListFromServer")
 	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
 	if err != nil {
-		log.Println("rpc connection error")
+		// log.Println("rpc connection error")
 		return []storage.Share{}, err
 	}
 	result := new([]storage.Share)
 	err = c.Call("Storage.GetShares", "", result)
 	if err != nil {
-		log.Println("rpc call error")
+		// log.Println("rpc call error")
 		return []storage.Share{}, err
 	}
 	// log.Printf("result type: %T", result)
@@ -105,7 +105,7 @@ func GetCloudVmList() ([]hypervisor.Vm, error) {
 	for _, ip := range ips {
 		vml, err := GetVmListFromServer(ip)
 		if err != nil {
-			// log.Println("error while getting vmlist for", ip, err)
+			log.Println("error while getting vmlist for", ip, err)
 			return []hypervisor.Vm{}, err
 		}
 		lst = append(lst, vml...)
@@ -118,13 +118,13 @@ func GetCloudShareList() ([]storage.Share, error) {
 	lst := []storage.Share{}
 	ips, err := ScanNetwork()
 	if err != nil {
-		log.Println("error during network scan", err)
+		// log.Println("error during network scan", err)
 		return []storage.Share{}, err
 	}
 	for _, ip := range ips {
 		vml, err := GetShareListFromServer(ip)
 		if err != nil {
-			log.Println("error while getting share list for", ip, err)
+			// log.Println("error while getting share list for", ip, err)
 			return []storage.Share{}, err
 		}
 		lst = append(lst, vml...)

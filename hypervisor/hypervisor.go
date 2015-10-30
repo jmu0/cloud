@@ -10,7 +10,7 @@ import (
 func IsHypervisor() (bool, error) {
 	res, err := functions.ExecShell("which", []string{"virsh"})
 	if err != nil {
-		return false,nil 
+		return false, nil
 	} else {
 		if len(res) > 0 {
 			return true, nil
@@ -123,23 +123,25 @@ func (h *Hypervisor) DestroyVm(vmName string, reply *string) error {
 
 //List vms on this server
 func VmList(vms *[]Vm) error {
-	str, err := functions.ExecShell("virsh", []string{"list"})
-	if err != nil {
-		return err
-	}
-	localhost, err := functions.GetLocalhostName()
-	lines := strings.Split(str, "\n")
-	lines = lines[2:]
-	for _, l := range lines {
-		if len(l) > 0 {
-			fields := strings.Fields(l)
-			v := Vm{
-				Name:  fields[1],
-				Host:  localhost,
-				State: fields[2],
+	if hyp, _ := IsHypervisor(); hyp {
+		str, err := functions.ExecShell("virsh", []string{"list"})
+		if err != nil {
+			return err
+		}
+		localhost, err := functions.GetLocalhostName()
+		lines := strings.Split(str, "\n")
+		lines = lines[2:]
+		for _, l := range lines {
+			if len(l) > 0 {
+				fields := strings.Fields(l)
+				v := Vm{
+					Name:  fields[1],
+					Host:  localhost,
+					State: fields[2],
+				}
+				v.ImagePath, err = GetImagePath(v.Name)
+				*vms = append(*vms, v)
 			}
-			v.ImagePath, err = GetImagePath(v.Name)
-			*vms = append(*vms, v)
 		}
 	}
 	return nil

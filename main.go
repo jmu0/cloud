@@ -118,11 +118,13 @@ func test() {
 		fmt.Println(sh)
 		fmt.Println(sh[1].ToLine())
 	*/
-	sh, err := client.GetCloudShareList()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(sh)
+	/*
+		sh, err := client.GetCloudShareList()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(sh)
+	*/
 }
 
 //print help from help.txt file
