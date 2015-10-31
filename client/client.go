@@ -87,7 +87,8 @@ func GetMountListFromServer(Host string) ([]storage.Mount, error) {
 
 //Returns ip addresses of servers
 func ScanNetwork() ([]string, error) {
-	timeout := time.Microsecond * 500
+	//TODO timeout in settings file
+	timeout := time.Microsecond * 800
 	lst := []string{}
 	for i := 1; i < 255; i++ {
 		ip := "10.0.0." + strconv.Itoa(i)
