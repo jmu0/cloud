@@ -291,19 +291,14 @@ type MacAddress struct {
 //Wake server. Get mac addresses from mac.json file
 func Wake(hostname string) (string, error) {
 	//find out which command
-	cmd, err := functions.ExecShell("which", []string{"wol"})
-	if err != nil {
-		return "", err
-	}
+	var wolcmd string
+	cmd, _ := functions.ExecShell("which", []string{"wol"})
 	if len(cmd) > 0 {
-		cmd = "wol"
+		wolcmd = "wol"
 	} else {
-		cmd, err := functions.ExecShell("which", []string{"wakeonlan"})
-		if err != nil {
-			return "", err
-		}
+		cmd, _ := functions.ExecShell("which", []string{"wakeonlan"})
 		if len(cmd) > 0 {
-			cmd = "wakeonlan"
+			wolcmd = "wakeonlan"
 		} else {
 			return "", errors.New("No wake-on-lan package installed")
 		}
@@ -329,7 +324,8 @@ func Wake(hostname string) (string, error) {
 	}
 	for _, a := range lst {
 		if a.Hostname == hostname {
-			str, err = functions.ExecShell(cmd, []string{a.Mac})
+			log.Println(wolcmd, a.Mac)
+			str, err = functions.ExecShell(wolcmd, []string{a.Mac})
 			if err != nil {
 				return "", err
 			}
