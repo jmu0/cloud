@@ -99,6 +99,7 @@ func AppendToFile(path string, content string) error {
 
 //Get settings from json file
 func GetSettings() (map[string]string, error) {
+	//TODO use settings package
 	str, err := ReadFile("/etc/cloud.conf")
 	if err != nil {
 		return make(map[string]string), errors.New("no settings file /etc/cloud.conf")
