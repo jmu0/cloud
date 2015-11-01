@@ -126,13 +126,14 @@ func routeCommand(args []string) {
 			printHelp()
 		}
 	} else {
-		test()
-		// printHelp()
+		// test()
+		printHelp()
 	}
 }
 
 func test() {
 	fmt.Println("Test")
+	// printServerList()
 	// fmt.Println(storage.CreateShare("/home/jos/tmp"))
 	// fmt.Println(storage.CreateShare("/nfs/share"))
 

@@ -7,6 +7,7 @@ import (
 	"cloud/storage"
 	"encoding/json"
 	"errors"
+	"github.com/jmu0/settings"
 	"log"
 	"net"
 	"net/rpc"
@@ -87,8 +88,17 @@ func GetMountListFromServer(Host string) ([]storage.Mount, error) {
 
 //Returns ip addresses of servers
 func ScanNetwork() ([]string, error) {
-	//TODO timeout in settings file
-	timeout := time.Microsecond * 800
+	var timeout time.Duration = 500
+	st, err := settings.GetSettings("/etc/cloud.conf")
+	if err == nil {
+		str, err := st.Get("timeout")
+		// log.Println(str)
+		if err == nil {
+			timeout, err = time.ParseDuration(str + "µs")
+		}
+	}
+	// timeout := time.Microsecond * ms
+	// log.Println(timeout)
 	lst := []string{}
 	for i := 1; i < 255; i++ {
 		ip := "10.0.0." + strconv.Itoa(i)
