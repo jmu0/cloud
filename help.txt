@@ -8,14 +8,14 @@ cloud shares
 cloud mounts
     prints a list of mounts on active servers 
 
-cloud guests
+cloud vmlist 
     prints a list of guest vm's on active servers
 
-cloud migrate <guest> <server>
-    live migration of <guest> to <server>
+cloud migrate <vm> <server>
+    live migration of <vm> to <server>
 
 cloud migrate all <from_server> <to_server>
-    live migration of all guests from <from_server> to <to_server>
+    live migration of all vm's from <from_server> to <to_server>
 
 cloud mount <share>
     mounts share on localhost in /mnt/<server>/<share>
