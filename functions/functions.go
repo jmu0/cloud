@@ -16,7 +16,7 @@ import (
 )
 
 //get output from shell command
-func ExecShell(cmd string, args []string) (string, error) {
+func ExecShell(cmd string, args ...string) (string, error) {
 	sh := exec.Command(cmd, args...)
 	var out bytes.Buffer
 	var errString bytes.Buffer

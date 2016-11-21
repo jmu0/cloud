@@ -8,7 +8,8 @@ import (
 )
 
 func IsHypervisor() (bool, error) {
-	res, err := functions.ExecShell("which", []string{"virsh"})
+	// res, err := functions.ExecShell("which", []string{"virsh"})
+	res, err := functions.ExecShell("which", "virsh")
 	if err != nil {
 		return false, nil
 	} else {
@@ -34,8 +35,9 @@ func (vm *Vm) Migrate(toHost string) {
 			uncomment listen_tcp = 1
 			tcp_port = "16509"
 	*/
-	var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
-	str, err := functions.ExecShell("virsh", cmd)
+	// var cmd []string = []string{"migrate --live --unsafe " + vm.Name + " qemu+tcp://" + toHost + "/system"}
+	// str, err := functions.ExecShell("virsh", cmd)
+	str, err := functions.ExecShell("virsh", "migrate", "--live", "--unsafe", vm.Name, "qemu+tcp://"+toHost+"/system")
 	if err != nil {
 		log.Println("migrate error:", str, err)
 	} else {
@@ -46,8 +48,10 @@ func (vm *Vm) Migrate(toHost string) {
 //shutdown guest
 func (vm *Vm) Shutdown() {
 	log.Println("Shutting down", vm.Name, "on", vm.Host, "...")
-	var cmd []string = []string{"shutdown " + vm.Name}
-	str, err := functions.ExecShell("virsh", cmd)
+	// var cmd []string = []string{"shutdown " + vm.Name}
+	// str, err := functions.ExecShell("virsh", cmd)
+	str, err := functions.ExecShell("virsh", "shutdown", vm.Name)
+
 	if err != nil {
 		log.Println("Shutdown error:", str, err)
 	} else {
@@ -58,8 +62,9 @@ func (vm *Vm) Shutdown() {
 //destroy guest
 func (vm *Vm) Destroy() {
 	log.Println("Destroying ", vm.Name, "on", vm.Host, "...")
-	var cmd []string = []string{"destroy " + vm.Name}
-	str, err := functions.ExecShell("virsh", cmd)
+	// var cmd []string = []string{"destroy " + vm.Name}
+	// str, err := functions.ExecShell("virsh", cmd)
+	str, err := functions.ExecShell("virsh", "destroy", vm.Name)
 	if err != nil {
 		log.Println("Destroy error:", str, err)
 	} else {
@@ -120,7 +125,8 @@ func (h *Hypervisor) DestroyVm(vmName string, reply *string) error {
 //List vms on this server
 func VmList(vms *[]Vm) error {
 	if hyp, _ := IsHypervisor(); hyp {
-		str, err := functions.ExecShell("virsh", []string{"list"})
+		// str, err := functions.ExecShell("virsh", []string{"list"})
+		str, err := functions.ExecShell("virsh", "list")
 		if err != nil {
 			return err
 		}
@@ -145,7 +151,8 @@ func VmList(vms *[]Vm) error {
 
 //Get image path from running vm
 func GetImagePath(vmName string) (string, error) {
-	str, err := functions.ExecShell("virsh", []string{"domblklist", vmName})
+	// str, err := functions.ExecShell("virsh", []string{"domblklist", vmName})
+	str, err := functions.ExecShell("virsh", "domblklist", vmName)
 	if err != nil {
 		return "", err
 	}

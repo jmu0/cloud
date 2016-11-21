@@ -302,11 +302,13 @@ type MacAddress struct {
 func Wake(hostname string) (string, error) {
 	//find out which command
 	var wolcmd string
-	cmd, _ := functions.ExecShell("which", []string{"wol"})
+	// cmd, _ := functions.ExecShell("which", []string{"wol"})
+	cmd, _ := functions.ExecShell("which", "wol")
 	if len(cmd) > 0 {
 		wolcmd = "wol"
 	} else {
-		cmd, _ := functions.ExecShell("which", []string{"wakeonlan"})
+		// cmd, _ := functions.ExecShell("which", []string{"wakeonlan"})
+		cmd, _ := functions.ExecShell("which", "wakeonlan")
 		if len(cmd) > 0 {
 			wolcmd = "wakeonlan"
 		} else {
@@ -335,7 +337,8 @@ func Wake(hostname string) (string, error) {
 	for _, a := range lst {
 		if a.Hostname == hostname {
 			log.Println(wolcmd, a.Mac)
-			str, err = functions.ExecShell(wolcmd, []string{a.Mac})
+			// str, err = functions.ExecShell(wolcmd, []string{a.Mac})
+			str, err = functions.ExecShell(wolcmd, a.Mac)
 			if err != nil {
 				return "", err
 			}

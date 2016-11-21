@@ -133,26 +133,11 @@ func routeCommand(args []string) {
 
 func test() {
 	fmt.Println("Test")
-	// printServerList()
-	// fmt.Println(storage.CreateShare("/home/jos/tmp"))
-	// fmt.Println(storage.CreateShare("/nfs/share"))
-
-	/*
-		sh, err := storage.GetShares()
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(sh)
-		fmt.Println(sh[1].ToLine())
-	*/
-	/*
-		sh, err := client.GetCloudShareList()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(sh)
-	*/
+	lst, err := storage.List("pool/data", "snapshot")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(lst)
 }
 
 //print help from help.txt file

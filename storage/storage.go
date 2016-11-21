@@ -103,7 +103,8 @@ func (s *Share) Mount() error {
 		}
 
 	}
-	_, err := functions.ExecShell("mount", []string{share, mountpoint})
+	// _, err := functions.ExecShell("mount", []string{share, mountpoint})
+	_, err := functions.ExecShell("mount", share, mountpoint)
 	if err != nil {
 		return err
 	}
@@ -135,7 +136,8 @@ func (m *Mount) FromLine(line string) {
 
 //returns if localhost is nfs server
 func IsNfsServer() (bool, error) {
-	res, err := functions.ExecShell("pgrep", []string{"nfsd"})
+	// res, err := functions.ExecShell("pgrep", []string{"nfsd"})
+	res, err := functions.ExecShell("pgrep", "nfsd")
 	if err != nil {
 		return false, nil
 	} else {
@@ -181,7 +183,8 @@ func IsShared(path string) (bool, error) {
 //get mounts on local server
 func GetMounts() ([]Mount, error) {
 	mounts := []Mount{}
-	txt, err := functions.ExecShell("df", []string{"-h", "-t", "nfs", "-t", "nfs4"})
+	// txt, err := functions.ExecShell("df", []string{"-h", "-t", "nfs", "-t", "nfs4"})
+	txt, err := functions.ExecShell("df", "-h", "-t", "nfs", "-t", "nfs4")
 	if err == nil {
 		lines := strings.Split(txt, "\n")
 		for _, l := range lines[1:] {
@@ -222,7 +225,8 @@ func CreateShare(path string) (Share, error) {
 		if err != nil {
 			return s, err
 		}
-		_, err = functions.ExecShell("exportfs", []string{"-rav"})
+		// _, err = functions.ExecShell("exportfs", []string{"-rav"})
+		_, err = functions.ExecShell("exportfs", "-rav")
 		if err != nil {
 			return s, err
 		}
