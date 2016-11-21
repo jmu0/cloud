@@ -42,6 +42,15 @@ func GetLocalhostName() (string, error) {
 
 //lookup ip address for hostname
 func GetIP(hostName string) (string, error) {
+	/*
+		check /etc/hosts on server
+		change this line if necessary:
+		127.0.0.1 <servername>
+		to:
+		<ip> <servername>
+		or this function will return 127.0.0.1
+	*/
+
 	ip, err := net.LookupHost(hostName)
 	if err != nil {
 		return "", err
