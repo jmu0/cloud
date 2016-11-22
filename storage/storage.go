@@ -39,7 +39,8 @@ func (s *Storage) MountShare(sharestring string, reply *string) error {
 }
 
 //receive zfs dataset, use with rpc
-func (s *Storage) ReceiveZfsSnapshot(stream DatasetStream, name string) error {
+func (s *Storage) ReceiveZfsSnapshot(stream DatasetStream, result *string) error {
+	*result = "DEBUG: from ReceiveZfsSnapshot"
 	return Receive(stream)
 }
 

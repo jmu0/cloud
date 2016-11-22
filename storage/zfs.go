@@ -60,6 +60,8 @@ func Find(name string) (Dataset, error) {
 //Receive snapshot
 // func Receive(stream io.Reader, name string) error {
 func Receive(stream DatasetStream) error {
+	//DEBUG
+	fmt.Println(stream)
 	sh := exec.Command("zfs", "receive", stream.Name)
 	var out, errstr bytes.Buffer
 	sh.Stdout = &out
@@ -67,6 +69,8 @@ func Receive(stream DatasetStream) error {
 	if err != nil {
 		return err
 	}
+	//DEBUG
+	fmt.Println(out)
 	sh.Stderr = &errstr
 	err = sh.Run()
 	if err != nil || len(errstr.String()) > 0 {
@@ -115,6 +119,7 @@ func (ds *Dataset) IsSnapshot() bool {
 }
 
 func (ds *Dataset) Send() (DatasetStream, error) {
+	fmt.Println("sending", ds.Name)
 	if ds.IsSnapshot() == false {
 		return DatasetStream{}, errors.New("Dataset " + ds.Name + " is not a snapshot")
 	}
