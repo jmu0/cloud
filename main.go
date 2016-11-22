@@ -131,15 +131,6 @@ func routeCommand(args []string) {
 	}
 }
 
-func test() {
-	fmt.Println("Test")
-	lst, err := storage.List("pool/data", "snapshot")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(lst)
-}
-
 //print help from help.txt file
 func printHelp() {
 	//find path
@@ -453,4 +444,14 @@ func makeLength(f *string, l int) {
 		}
 		*f += " "
 	}
+}
+
+func test() {
+	fmt.Println("Test")
+	ds, err := storage.Find("pool/test@cloudtest2")
+	if err != nil {
+		fmt.Println(err)
+	}
+	str, err := ds.Send()
+	fmt.Println(client.SendDatasetToServer("data", str))
 }

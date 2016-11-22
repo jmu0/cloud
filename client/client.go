@@ -7,6 +7,7 @@ import (
 	"cloud/storage"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jmu0/settings"
 	"log"
 	"net"
@@ -28,6 +29,18 @@ func GetStringFromServer(Host, Command, Parameters string) (string, error) {
 		return "", err
 	}
 	return *result, nil
+}
+
+//send zfs dataset to server
+func SendDatasetToServer(Host string, stream storage.DatasetStream) error {
+	var result string
+	c, err := rpc.Dial("tcp", Host+functions.GetServerPort())
+	if err != nil {
+		return err
+	}
+	err = c.Call("storage.ReceiveZfsSnapshot", stream, &result)
+	fmt.Println("result:", result)
+	return nil
 }
 
 //get server struct from socket

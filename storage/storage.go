@@ -5,6 +5,7 @@ import (
 	"cloud/functions"
 	"errors"
 	// "log"
+	// "io"
 	"os"
 	"strings"
 )
@@ -35,6 +36,11 @@ func (s *Storage) MountShare(sharestring string, reply *string) error {
 	}
 	*reply = sharestring + " mounted"
 	return sh.Mount()
+}
+
+//receive zfs dataset, use with rpc
+func (s *Storage) ReceiveZfsSnapshot(stream DatasetStream, name string) error {
+	return Receive(stream)
 }
 
 //structure to store properties for nfs share
