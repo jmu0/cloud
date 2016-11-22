@@ -452,6 +452,8 @@ func test() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	str, err := ds.Send()
-	fmt.Println(client.SendDatasetToServer("data", str))
+	var stream storage.DatasetStream = storage.DatasetStream{}
+	stream.Name = ds.Name
+	err = ds.Send(stream.Stream)
+	fmt.Println("test>senddatatoserver:", client.SendDatasetToServer("data", stream))
 }

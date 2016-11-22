@@ -60,6 +60,7 @@ func Find(name string) (Dataset, error) {
 //Receive snapshot
 // func Receive(stream io.Reader, name string) error {
 func Receive(stream DatasetStream) error {
+	//STREAMING OVER RPC DOESN'T WORK
 	//DEBUG
 	fmt.Println(stream)
 	sh := exec.Command("zfs", "receive", stream.Name)
@@ -118,17 +119,22 @@ func (ds *Dataset) IsSnapshot() bool {
 	return strings.Contains(ds.Name, "@")
 }
 
-func (ds *Dataset) Send() (DatasetStream, error) {
+func (ds *Dataset) Send(output io.Writer) error {
+	//STREAMING OVER RPC DOESN'T WORK
 	fmt.Println("sending", ds.Name)
 	if ds.IsSnapshot() == false {
-		return DatasetStream{}, errors.New("Dataset " + ds.Name + " is not a snapshot")
+		return errors.New("Dataset " + ds.Name + " is not a snapshot")
 	}
+
 	sh := exec.Command("zfs", "send", ds.Name)
 	var errstr bytes.Buffer
 	sh.Stderr = &errstr
+	sh.Stdout = output
 	err := sh.Run()
 	if err != nil || len(errstr.String()) > 0 {
-		return DatasetStream{}, errors.New(err.Error() + ", " + errstr.String())
+		return errors.New(err.Error() + ", " + errstr.String())
 	}
-	return DatasetStream{Stream: sh.Stdout, Name: ds.Name}, nil
+
+	fmt.Println("send returning without errors")
+	return nil
 }

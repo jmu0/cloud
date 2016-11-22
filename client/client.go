@@ -38,7 +38,13 @@ func SendDatasetToServer(Host string, stream storage.DatasetStream) error {
 	if err != nil {
 		return err
 	}
-	err = c.Call("storage.ReceiveZfsSnapshot", stream, &result)
+	//DEBUG
+	fmt.Println("stream:", stream)
+	err = c.Call("Storage.ReceiveZfsSnapshot", stream, &result)
+	if err != nil {
+		return err
+	}
+	//DEBUG
 	fmt.Println("result:", result)
 	return nil
 }
