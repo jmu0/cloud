@@ -1,10 +1,11 @@
 package hypervisor
 
 import (
-	"cloud/functions"
 	"errors"
 	"log"
 	"strings"
+
+	"github.com/jmu0/cloud/functions"
 )
 
 func IsHypervisor() (bool, error) {

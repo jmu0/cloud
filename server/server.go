@@ -1,9 +1,9 @@
 package server
 
 import (
-	"cloud/functions"
-	"cloud/hypervisor"
-	"cloud/storage"
+	"github.com/jmu0/cloud/functions"
+	"github.com/jmu0/cloud/hypervisor"
+	"github.com/jmu0/cloud/storage"
 	// "fmt"
 	// "errors"
 	"log"

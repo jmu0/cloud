@@ -1,20 +1,21 @@
 package client
 
 import (
-	"cloud/functions"
-	"cloud/hypervisor"
-	"cloud/server"
-	"cloud/storage"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jmu0/settings"
 	"log"
 	"net"
 	"net/rpc"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jmu0/cloud/functions"
+	"github.com/jmu0/cloud/hypervisor"
+	"github.com/jmu0/cloud/server"
+	"github.com/jmu0/cloud/storage"
+	"github.com/jmu0/settings"
 )
 
 //get string value from socket

@@ -1,14 +1,16 @@
 package main
 
 import (
-	"cloud/client"
-	"cloud/functions"
-	"cloud/hypervisor"
-	"cloud/server"
-	"cloud/storage"
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/jmu0/cloud/functions"
+	"github.com/jmu0/cloud/hypervisor"
+	"github.com/jmu0/cloud/server"
+	"github.com/jmu0/cloud/storage"
+
+	"github.com/jmu0/cloud/client"
 )
 
 func main() {
